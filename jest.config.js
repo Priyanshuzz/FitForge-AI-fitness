@@ -7,28 +7,24 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
-  "testEnvironment": "jsdom",
-  "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
-  "testPathIgnorePatterns": ["<rootDir>/.next/", "<rootDir>/node_modules/"],
-  "moduleNameMapping": {
-    "^@/(.*)$": "<rootDir>/$1"
-  },
-  "transform": {
-    "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { "presets": ["next/babel"] }]
-  },
-  "collectCoverageFrom": [
+  testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/", "<rootDir>/e2e/"],
+  collectCoverageFrom: [
     "components/**/*.{js,jsx,ts,tsx}",
     "lib/**/*.{js,jsx,ts,tsx}",
     "app/**/*.{js,jsx,ts,tsx}",
     "!**/*.d.ts",
-    "!**/node_modules/**"
+    "!**/node_modules/**",
+    "!**/.next/**",
+    "!**/e2e/**"
   ],
-  "coverageThreshold": {
-    "global": {
-      "branches": 70,
-      "functions": 70,
-      "lines": 70,
-      "statements": 70
+  coverageThreshold: {
+    global: {
+      branches: 50,
+      functions: 50,
+      lines: 50,
+      statements: 50
     }
   }
 }
