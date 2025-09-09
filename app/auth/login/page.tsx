@@ -1,93 +1,112 @@
-"use client"
+'use client';
 
-import type React from "react"
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Eye, EyeOff, ArrowLeft, Dumbbell, Loader2 } from "lucide-react"
-import { useAuth } from "@/contexts/auth-context"
-import { SimpleErrorBoundary } from "@/components/error-boundary"
-import { logger } from "@/lib/utils/error-handling"
+import type React from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Eye, EyeOff, ArrowLeft, Dumbbell, Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/auth-context';
+import { SimpleErrorBoundary } from '@/components/error-boundary';
+import { logger } from '@/lib/utils/error-handling';
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  })
-  
-  const { signIn, signInWithGoogle } = useAuth()
-  const router = useRouter()
+    email: '',
+    password: '',
+  });
+
+  const { signIn, signInWithGoogle } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
     try {
-      logger.info('Login attempt started', { email: formData.email })
-      
-      const { error } = await signIn(formData.email, formData.password)
-      
+      logger.info('Login attempt started', { email: formData.email });
+
+      const { error } = await signIn(formData.email, formData.password);
+
       if (error) {
-        setError(error.message || 'Login failed. Please check your credentials.')
-        logger.warn('Login failed', { email: formData.email, error: error.message })
-        return
+        setError(
+          error.message || 'Login failed. Please check your credentials.'
+        );
+        logger.warn('Login failed', {
+          email: formData.email,
+          error: error.message,
+        });
+        return;
       }
 
-      logger.info('Login successful', { email: formData.email })
-      router.push('/dashboard')
-      
+      logger.info('Login successful', { email: formData.email });
+      router.push('/dashboard');
     } catch (err) {
-      const errorMessage = 'An unexpected error occurred. Please try again.'
-      setError(errorMessage)
-      logger.error('Login error', err instanceof Error ? err : new Error(String(err)), { email: formData.email })
+      const errorMessage = 'An unexpected error occurred. Please try again.';
+      setError(errorMessage);
+      logger.error(
+        'Login error',
+        err instanceof Error ? err : new Error(String(err)),
+        { email: formData.email }
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    setError(null)
-    
+    setIsLoading(true);
+    setError(null);
+
     try {
-      logger.info('Google sign-in attempted')
-      
-      const { error } = await signInWithGoogle()
-      
+      logger.info('Google sign-in attempted');
+
+      const { error } = await signInWithGoogle();
+
       if (error) {
-        setError(error.message || 'Google sign-in failed. Please try again.')
-        logger.warn('Google sign-in failed', { error: error.message })
-        return
+        setError(error.message || 'Google sign-in failed. Please try again.');
+        logger.warn('Google sign-in failed', { error: error.message });
+        return;
       }
 
-      logger.info('Google sign-in successful')
-      router.push('/dashboard')
-      
+      logger.info('Google sign-in successful');
+      router.push('/dashboard');
     } catch (err) {
-      const errorMessage = 'Google sign-in failed. Please try again.'
-      setError(errorMessage)
-      logger.error('Google sign-in error', err instanceof Error ? err : new Error(String(err)))
+      const errorMessage = 'Google sign-in failed. Please try again.';
+      setError(errorMessage);
+      logger.error(
+        'Google sign-in error',
+        err instanceof Error ? err : new Error(String(err))
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <SimpleErrorBoundary>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="mb-6">
-            <Link href="/" className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900"
+            >
               <ArrowLeft className="h-4 w-4" />
               Back to FitForge AI
             </Link>
@@ -100,7 +119,8 @@ export default function LoginPage() {
               </div>
               <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
               <CardDescription>
-                Sign in to your FitForge AI account to continue your fitness journey
+                Sign in to your FitForge AI account to continue your fitness
+                journey
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -109,7 +129,7 @@ export default function LoginPage() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
@@ -118,7 +138,9 @@ export default function LoginPage() {
                     type="email"
                     placeholder="Enter your email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     disabled={isLoading}
                     required
                   />
@@ -129,10 +151,12 @@ export default function LoginPage() {
                   <div className="relative">
                     <Input
                       id="password"
-                      type={showPassword ? "text" : "password"}
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
                       value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      onChange={e =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
                       disabled={isLoading}
                       required
                     />
@@ -155,29 +179,25 @@ export default function LoginPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <input 
-                      id="remember" 
-                      type="checkbox" 
-                      className="rounded border-slate-300" 
+                    <input
+                      id="remember"
+                      type="checkbox"
+                      className="rounded border-slate-300"
                       disabled={isLoading}
                     />
                     <Label htmlFor="remember" className="text-sm">
                       Remember me
                     </Label>
                   </div>
-                  <Link 
-                    href="/auth/forgot-password" 
+                  <Link
+                    href="/auth/forgot-password"
                     className="text-sm text-primary hover:text-primary/80"
                   >
                     Forgot password?
                   </Link>
                 </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isLoading}
-                >
+                <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -191,20 +211,20 @@ export default function LoginPage() {
 
               <div className="mt-6">
                 <Separator className="my-4" />
-                <Button 
-                  variant="outline" 
-                  className="w-full" 
+                <Button
+                  variant="outline"
+                  className="w-full"
                   onClick={handleGoogleSignIn}
                   disabled={isLoading}
                 >
                   Continue with Google
                 </Button>
-                
+
                 <div className="text-center mt-4">
                   <p className="text-sm text-slate-600">
                     Don't have an account?{' '}
-                    <Link 
-                      href="/auth/register" 
+                    <Link
+                      href="/auth/register"
                       className="text-primary hover:text-primary/80 font-medium"
                     >
                       Sign up for free
@@ -218,11 +238,17 @@ export default function LoginPage() {
           <div className="mt-6 text-center text-xs text-slate-500">
             <p>
               By signing in, you agree to our{' '}
-              <Link href="/terms" className="text-primary hover:text-primary/80">
+              <Link
+                href="/terms"
+                className="text-primary hover:text-primary/80"
+              >
                 Terms of Service
               </Link>{' '}
               and{' '}
-              <Link href="/privacy" className="text-primary hover:text-primary/80">
+              <Link
+                href="/privacy"
+                className="text-primary hover:text-primary/80"
+              >
                 Privacy Policy
               </Link>
             </p>
@@ -230,5 +256,5 @@ export default function LoginPage() {
         </div>
       </div>
     </SimpleErrorBoundary>
-  )
+  );
 }

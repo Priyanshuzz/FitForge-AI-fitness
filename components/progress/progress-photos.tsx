@@ -2,10 +2,11 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Camera,
   Upload,
   Calendar,
@@ -15,7 +16,7 @@ import {
   ArrowLeftRight,
   Grid,
   List,
-  Plus
+  Plus,
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -41,7 +42,7 @@ const mockPhotos: ProgressPhoto[] = [
     date: '2024-01-01',
     category: 'front',
     notes: 'Starting point',
-    weight_kg: 75.0
+    weight_kg: 75.0,
   },
   {
     id: '2',
@@ -49,7 +50,7 @@ const mockPhotos: ProgressPhoto[] = [
     date: '2024-01-15',
     category: 'front',
     notes: '2 weeks progress',
-    weight_kg: 73.5
+    weight_kg: 73.5,
   },
   {
     id: '3',
@@ -57,7 +58,7 @@ const mockPhotos: ProgressPhoto[] = [
     date: '2024-02-01',
     category: 'front',
     notes: '1 month progress',
-    weight_kg: 72.0
+    weight_kg: 72.0,
   },
   {
     id: '4',
@@ -65,8 +66,8 @@ const mockPhotos: ProgressPhoto[] = [
     date: '2024-01-01',
     category: 'side',
     notes: 'Starting side view',
-    weight_kg: 75.0
-  }
+    weight_kg: 75.0,
+  },
 ];
 
 export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
@@ -82,12 +83,13 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
     { value: 'front', label: 'Front View' },
     { value: 'side', label: 'Side View' },
     { value: 'back', label: 'Back View' },
-    { value: 'progress', label: 'Progress' }
+    { value: 'progress', label: 'Progress' },
   ];
 
-  const filteredPhotos = selectedCategory === 'all' 
-    ? photos 
-    : photos.filter(photo => photo.category === selectedCategory);
+  const filteredPhotos =
+    selectedCategory === 'all'
+      ? photos
+      : photos.filter(photo => photo.category === selectedCategory);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -98,8 +100,8 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
   };
 
   const handlePhotoSelect = (photoId: string) => {
-    setSelectedPhotos(prev => 
-      prev.includes(photoId) 
+    setSelectedPhotos(prev =>
+      prev.includes(photoId)
         ? prev.filter(id => id !== photoId)
         : [...prev, photoId]
     );
@@ -123,10 +125,13 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
     >
       <Card className="overflow-hidden">
         <div className="relative">
-          <img
+          <Image
             src={photo.url}
             alt={`Progress photo from ${photo.date}`}
             className="w-full h-48 object-cover"
+            width={300}
+            height={200}
+            unoptimized
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="absolute top-2 right-2">
@@ -176,10 +181,13 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
       onClick={() => handlePhotoSelect(photo.id)}
     >
       <div className="flex items-center space-x-4">
-        <img
+        <Image
           src={photo.url}
           alt={`Progress photo from ${photo.date}`}
           className="w-16 h-16 object-cover rounded"
+          width={64}
+          height={64}
+          unoptimized
         />
         <div className="flex-1">
           <div className="flex items-center space-x-2 mb-1">
@@ -226,9 +234,16 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
             size="sm"
             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
           >
-            {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
+            {viewMode === 'grid' ? (
+              <List className="w-4 h-4" />
+            ) : (
+              <Grid className="w-4 h-4" />
+            )}
           </Button>
-          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+          <Button
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+          >
             <Upload className="w-4 h-4 mr-2" />
             Upload
           </Button>
@@ -254,7 +269,8 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
-                {selectedPhotos.length} photo{selectedPhotos.length > 1 ? 's' : ''} selected
+                {selectedPhotos.length} photo
+                {selectedPhotos.length > 1 ? 's' : ''} selected
               </span>
               <div className="flex space-x-2">
                 {selectedPhotos.length >= 2 && (
@@ -271,8 +287,8 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setSelectedPhotos([])}
                 >
@@ -308,7 +324,10 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
                     <Camera className="w-4 h-4 mr-2" />
                     Take First Photo
                   </Button>
-                  <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                  <Button
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Photos
                   </Button>
@@ -316,19 +335,21 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
               </CardContent>
             </Card>
           ) : (
-            <div className={
-              viewMode === 'grid' 
-                ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4' 
-                : 'space-y-3'
-            }>
+            <div
+              className={
+                viewMode === 'grid'
+                  ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
+                  : 'space-y-3'
+              }
+            >
               <AnimatePresence>
-                {filteredPhotos.map(photo => (
+                {filteredPhotos.map(photo =>
                   viewMode === 'grid' ? (
                     <PhotoCard key={photo.id} photo={photo} />
                   ) : (
                     <PhotoListItem key={photo.id} photo={photo} />
                   )
-                ))}
+                )}
               </AnimatePresence>
             </div>
           )}
@@ -350,30 +371,33 @@ export function ProgressPhotos({ userId, onTakePhoto }: ProgressPhotosProps) {
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
               className="bg-background rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto"
-              onClick={(e) => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-semibold">Photo Comparison</h3>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setShowComparison(false)}
                 >
                   ×
                 </Button>
               </div>
-              
+
               <div className="grid md:grid-cols-2 gap-6">
                 {selectedPhotos.slice(0, 2).map((photoId, index) => {
                   const photo = photos.find(p => p.id === photoId);
                   if (!photo) return null;
-                  
+
                   return (
                     <div key={photoId} className="text-center">
-                      <img
+                      <Image
                         src={photo.url}
                         alt={`Progress photo ${index + 1}`}
                         className="w-full h-80 object-cover rounded-lg mb-4"
+                        width={400}
+                        height={320}
+                        unoptimized
                       />
                       <div className="space-y-2">
                         <div className="font-medium">

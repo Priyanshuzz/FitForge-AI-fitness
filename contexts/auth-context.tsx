@@ -10,7 +10,11 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
-  signUp: (email: string, password: string, userData?: any) => Promise<{ error?: any }>;
+  signUp: (
+    email: string,
+    password: string,
+    userData?: any
+  ) => Promise<{ error?: any }>;
   signInWithGoogle: () => Promise<{ error?: any }>;
 }
 
@@ -24,7 +28,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Skip auth setup if Supabase is not configured
-    if (!supabase || !supabase.auth || typeof supabase.auth.getSession !== 'function') {
+    if (
+      !supabase ||
+      !supabase.auth ||
+      typeof supabase.auth.getSession !== 'function'
+    ) {
       console.info('Running in demo mode - authentication disabled');
       setLoading(false);
       return;
@@ -33,7 +41,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session
     const getSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth!.getSession();
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth!.getSession();
         if (error) {
           console.error('Error getting session:', error);
         } else {
@@ -62,7 +73,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase]);
 
   const signOut = async () => {
-    if (!supabase || !supabase.auth || typeof supabase.auth.signOut !== 'function') {
+    if (
+      !supabase ||
+      !supabase.auth ||
+      typeof supabase.auth.signOut !== 'function'
+    ) {
       console.warn('Supabase not configured - running in demo mode');
       return;
     }
@@ -76,8 +91,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    if (!supabase || !supabase.auth || typeof supabase.auth.signInWithPassword !== 'function') {
-      return { error: new Error('Supabase not configured - running in demo mode') };
+    if (
+      !supabase ||
+      !supabase.auth ||
+      typeof supabase.auth.signInWithPassword !== 'function'
+    ) {
+      return {
+        error: new Error('Supabase not configured - running in demo mode'),
+      };
     }
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -92,8 +113,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, userData?: any) => {
-    if (!supabase || !supabase.auth || typeof supabase.auth.signUp !== 'function') {
-      return { error: new Error('Supabase not configured - running in demo mode') };
+    if (
+      !supabase ||
+      !supabase.auth ||
+      typeof supabase.auth.signUp !== 'function'
+    ) {
+      return {
+        error: new Error('Supabase not configured - running in demo mode'),
+      };
     }
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -111,8 +138,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    if (!supabase || !supabase.auth || typeof supabase.auth.signInWithOAuth !== 'function') {
-      return { error: new Error('Supabase not configured - running in demo mode') };
+    if (
+      !supabase ||
+      !supabase.auth ||
+      typeof supabase.auth.signInWithOAuth !== 'function'
+    ) {
+      return {
+        error: new Error('Supabase not configured - running in demo mode'),
+      };
     }
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -138,11 +171,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithGoogle,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

@@ -3,17 +3,17 @@
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  Target, 
-  TrendingDown, 
-  Dumbbell, 
-  Heart, 
-  Activity, 
+import {
+  Target,
+  TrendingDown,
+  Dumbbell,
+  Heart,
+  Activity,
   Trophy,
   Smile,
   Zap,
   BarChart3,
-  Users
+  Users,
 } from 'lucide-react';
 import { PrimaryGoal, MotivationStyle } from '@/lib/types/fitness';
 import type { IntakeForm } from '@/lib/types/fitness';
@@ -31,7 +31,7 @@ const PRIMARY_GOALS = [
     description: 'Reduce body weight and body fat',
     icon: TrendingDown,
     details: 'Focus on calorie deficit, cardio, and strength training',
-    timeframe: '1-6 months typical'
+    timeframe: '1-6 months typical',
   },
   {
     value: PrimaryGoal.BUILD_MUSCLE,
@@ -39,7 +39,7 @@ const PRIMARY_GOALS = [
     description: 'Increase muscle mass and strength',
     icon: Dumbbell,
     details: 'Emphasis on resistance training and protein intake',
-    timeframe: '3-12 months typical'
+    timeframe: '3-12 months typical',
   },
   {
     value: PrimaryGoal.MAINTAIN,
@@ -47,7 +47,7 @@ const PRIMARY_GOALS = [
     description: 'Stay at current fitness level',
     icon: Target,
     details: 'Balanced approach to maintain current physique',
-    timeframe: 'Ongoing lifestyle'
+    timeframe: 'Ongoing lifestyle',
   },
   {
     value: PrimaryGoal.IMPROVE_ENDURANCE,
@@ -55,7 +55,7 @@ const PRIMARY_GOALS = [
     description: 'Better cardiovascular fitness',
     icon: Heart,
     details: 'Cardio-focused training with progressive volume',
-    timeframe: '6-16 weeks typical'
+    timeframe: '6-16 weeks typical',
   },
   {
     value: PrimaryGoal.GENERAL_HEALTH,
@@ -63,7 +63,7 @@ const PRIMARY_GOALS = [
     description: 'Overall health improvement',
     icon: Activity,
     details: 'Well-rounded approach to fitness and nutrition',
-    timeframe: 'Lifelong journey'
+    timeframe: 'Lifelong journey',
   },
   {
     value: PrimaryGoal.SPORT_SPECIFIC,
@@ -71,8 +71,8 @@ const PRIMARY_GOALS = [
     description: 'Train for a specific sport or activity',
     icon: Trophy,
     details: 'Specialized training for performance goals',
-    timeframe: 'Varies by sport/event'
-  }
+    timeframe: 'Varies by sport/event',
+  },
 ];
 
 const MOTIVATION_STYLES = [
@@ -85,8 +85,8 @@ const MOTIVATION_STYLES = [
       'Positive reinforcement',
       'Focus on progress over perfection',
       'Compassionate guidance',
-      'Celebration of small wins'
-    ]
+      'Celebration of small wins',
+    ],
   },
   {
     value: MotivationStyle.FIRM,
@@ -97,8 +97,8 @@ const MOTIVATION_STYLES = [
       'Clear expectations',
       'Accountability focus',
       'Push comfort zone',
-      'Results-oriented approach'
-    ]
+      'Results-oriented approach',
+    ],
   },
   {
     value: MotivationStyle.DATA_DRIVEN,
@@ -109,8 +109,8 @@ const MOTIVATION_STYLES = [
       'Progress tracking focus',
       'Analytical insights',
       'Evidence-based guidance',
-      'Performance metrics'
-    ]
+      'Performance metrics',
+    ],
   },
   {
     value: MotivationStyle.COMMUNITY,
@@ -121,12 +121,16 @@ const MOTIVATION_STYLES = [
       'Shared experiences',
       'Group encouragement',
       'Social accountability',
-      'Collective motivation'
-    ]
-  }
+      'Collective motivation',
+    ],
+  },
 ];
 
-export function GoalsMotivationStep({ data, errors, onChange }: GoalsMotivationStepProps) {
+export function GoalsMotivationStep({
+  data,
+  errors,
+  onChange,
+}: GoalsMotivationStepProps) {
   const handleInputChange = (field: keyof IntakeForm, value: any) => {
     onChange({ [field]: value });
   };
@@ -136,40 +140,44 @@ export function GoalsMotivationStep({ data, errors, onChange }: GoalsMotivationS
       {/* Primary Goal */}
       <div className="space-y-4">
         <div>
-          <Label className="text-lg font-semibold">Primary Fitness Goal *</Label>
+          <Label className="text-lg font-semibold">
+            Primary Fitness Goal *
+          </Label>
           <p className="text-sm text-muted-foreground mt-1">
             What's your main objective? This will shape your entire program.
           </p>
         </div>
-        
+
         <RadioGroup
           value={data.primary_goal || ''}
-          onValueChange={(value) => handleInputChange('primary_goal', value as PrimaryGoal)}
+          onValueChange={value =>
+            handleInputChange('primary_goal', value as PrimaryGoal)
+          }
         >
           <div className="grid gap-4">
-            {PRIMARY_GOALS.map((goal) => {
+            {PRIMARY_GOALS.map(goal => {
               const Icon = goal.icon;
               const isSelected = data.primary_goal === goal.value;
-              
+
               return (
-                <Card 
+                <Card
                   key={goal.value}
                   className={`cursor-pointer transition-all duration-200 ${
-                    isSelected 
-                      ? 'border-primary bg-primary/5 shadow-md' 
+                    isSelected
+                      ? 'border-primary bg-primary/5 shadow-md'
                       : 'hover:border-primary/50 hover:shadow-sm'
                   }`}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-4">
-                      <RadioGroupItem 
-                        value={goal.value} 
+                      <RadioGroupItem
+                        value={goal.value}
                         id={goal.value}
                         className="mt-1"
                       />
                       <Icon className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
                       <div className="flex-1">
-                        <Label 
+                        <Label
                           htmlFor={goal.value}
                           className="font-semibold cursor-pointer text-base"
                         >
@@ -181,11 +189,15 @@ export function GoalsMotivationStep({ data, errors, onChange }: GoalsMotivationS
                         <div className="grid md:grid-cols-2 gap-2 text-sm">
                           <div>
                             <span className="font-medium">Approach: </span>
-                            <span className="text-muted-foreground">{goal.details}</span>
+                            <span className="text-muted-foreground">
+                              {goal.details}
+                            </span>
                           </div>
                           <div>
                             <span className="font-medium">Timeline: </span>
-                            <span className="text-muted-foreground">{goal.timeframe}</span>
+                            <span className="text-muted-foreground">
+                              {goal.timeframe}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -196,27 +208,27 @@ export function GoalsMotivationStep({ data, errors, onChange }: GoalsMotivationS
             })}
           </div>
         </RadioGroup>
-        
+
         {errors.primary_goal && (
           <p className="text-sm text-destructive">{errors.primary_goal}</p>
         )}
-        
+
         {data.primary_goal && (
           <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
             <h4 className="font-medium mb-2">🎯 Your Goal Strategy</h4>
             <p className="text-sm">
-              {data.primary_goal === PrimaryGoal.LOSE_WEIGHT && 
+              {data.primary_goal === PrimaryGoal.LOSE_WEIGHT &&
                 "We'll create a sustainable calorie deficit through balanced nutrition and exercise, focusing on preserving muscle while reducing body fat."}
-              {data.primary_goal === PrimaryGoal.BUILD_MUSCLE && 
-                "Your program will emphasize progressive resistance training with adequate protein and calories to support muscle growth."}
-              {data.primary_goal === PrimaryGoal.MAINTAIN && 
+              {data.primary_goal === PrimaryGoal.BUILD_MUSCLE &&
+                'Your program will emphasize progressive resistance training with adequate protein and calories to support muscle growth.'}
+              {data.primary_goal === PrimaryGoal.MAINTAIN &&
                 "We'll design a balanced routine to maintain your current fitness level with variety to keep you engaged."}
-              {data.primary_goal === PrimaryGoal.IMPROVE_ENDURANCE && 
-                "Cardiovascular training will be prioritized with progressive volume and intensity increases."}
-              {data.primary_goal === PrimaryGoal.GENERAL_HEALTH && 
-                "A well-rounded approach combining strength, cardio, flexibility, and nutrition for overall wellness."}
-              {data.primary_goal === PrimaryGoal.SPORT_SPECIFIC && 
-                "Training will be tailored to the specific demands and movement patterns of your chosen sport or activity."}
+              {data.primary_goal === PrimaryGoal.IMPROVE_ENDURANCE &&
+                'Cardiovascular training will be prioritized with progressive volume and intensity increases.'}
+              {data.primary_goal === PrimaryGoal.GENERAL_HEALTH &&
+                'A well-rounded approach combining strength, cardio, flexibility, and nutrition for overall wellness.'}
+              {data.primary_goal === PrimaryGoal.SPORT_SPECIFIC &&
+                'Training will be tailored to the specific demands and movement patterns of your chosen sport or activity.'}
             </p>
           </div>
         )}
@@ -225,40 +237,44 @@ export function GoalsMotivationStep({ data, errors, onChange }: GoalsMotivationS
       {/* Motivation Style */}
       <div className="space-y-4">
         <div>
-          <Label className="text-lg font-semibold">Preferred Coaching Style *</Label>
+          <Label className="text-lg font-semibold">
+            Preferred Coaching Style *
+          </Label>
           <p className="text-sm text-muted-foreground mt-1">
             How do you prefer to receive guidance and motivation?
           </p>
         </div>
-        
+
         <RadioGroup
           value={data.motivation_style || ''}
-          onValueChange={(value) => handleInputChange('motivation_style', value as MotivationStyle)}
+          onValueChange={value =>
+            handleInputChange('motivation_style', value as MotivationStyle)
+          }
         >
           <div className="grid md:grid-cols-2 gap-4">
-            {MOTIVATION_STYLES.map((style) => {
+            {MOTIVATION_STYLES.map(style => {
               const Icon = style.icon;
               const isSelected = data.motivation_style === style.value;
-              
+
               return (
-                <Card 
+                <Card
                   key={style.value}
                   className={`cursor-pointer transition-all duration-200 ${
-                    isSelected 
-                      ? 'border-primary bg-primary/5 shadow-md' 
+                    isSelected
+                      ? 'border-primary bg-primary/5 shadow-md'
                       : 'hover:border-primary/50 hover:shadow-sm'
                   }`}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-3">
-                      <RadioGroupItem 
-                        value={style.value} 
+                      <RadioGroupItem
+                        value={style.value}
                         id={style.value}
                         className="mt-1"
                       />
                       <Icon className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
                       <div className="flex-1">
-                        <Label 
+                        <Label
                           htmlFor={style.value}
                           className="font-semibold cursor-pointer"
                         >
@@ -269,9 +285,14 @@ export function GoalsMotivationStep({ data, errors, onChange }: GoalsMotivationS
                         </p>
                         <div className="space-y-1">
                           {style.characteristics.map((char, index) => (
-                            <div key={index} className="flex items-center space-x-2">
+                            <div
+                              key={index}
+                              className="flex items-center space-x-2"
+                            >
                               <div className="w-1 h-1 bg-primary rounded-full flex-shrink-0" />
-                              <span className="text-xs text-muted-foreground">{char}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {char}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -283,22 +304,22 @@ export function GoalsMotivationStep({ data, errors, onChange }: GoalsMotivationS
             })}
           </div>
         </RadioGroup>
-        
+
         {errors.motivation_style && (
           <p className="text-sm text-destructive">{errors.motivation_style}</p>
         )}
-        
+
         {data.motivation_style && (
           <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
             <h4 className="font-medium mb-2">💪 Your Coaching Experience</h4>
             <p className="text-sm">
-              {data.motivation_style === MotivationStyle.GENTLE && 
+              {data.motivation_style === MotivationStyle.GENTLE &&
                 "I'll provide supportive, encouraging guidance that celebrates your progress and helps you build sustainable habits at your own pace."}
-              {data.motivation_style === MotivationStyle.FIRM && 
+              {data.motivation_style === MotivationStyle.FIRM &&
                 "I'll keep you accountable with clear expectations and challenges that push you to achieve your best results."}
-              {data.motivation_style === MotivationStyle.DATA_DRIVEN && 
+              {data.motivation_style === MotivationStyle.DATA_DRIVEN &&
                 "I'll focus on tracking metrics, analyzing your progress, and providing evidence-based insights to optimize your results."}
-              {data.motivation_style === MotivationStyle.COMMUNITY && 
+              {data.motivation_style === MotivationStyle.COMMUNITY &&
                 "I'll emphasize shared experiences and community support to keep you motivated through connection with others."}
             </p>
           </div>

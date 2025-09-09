@@ -19,11 +19,13 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 To enable all features (database, authentication, AI), follow these steps:
 
 ### 1. Copy Environment Template
+
 ```bash
 cp .env.local.example .env.local
 ```
 
 ### 2. Set Up Supabase (Database & Auth)
+
 1. Go to [supabase.com](https://supabase.com) and create a free account
 2. Create a new project
 3. Go to **Settings > API**
@@ -34,6 +36,7 @@ cp .env.local.example .env.local
    ```
 
 ### 3. Set Up OpenAI (AI Features)
+
 1. Go to [platform.openai.com](https://platform.openai.com)
 2. Create an API key
 3. Add to `.env.local`:
@@ -42,6 +45,7 @@ cp .env.local.example .env.local
    ```
 
 ### 4. Restart the Development Server
+
 ```bash
 npm run dev
 ```
@@ -49,6 +53,7 @@ npm run dev
 ## ✨ What You Get
 
 ### Demo Mode (No Setup Required)
+
 - ✅ Full UI/UX experience
 - ✅ Component interactions
 - ✅ Visual feedback
@@ -57,6 +62,7 @@ npm run dev
 - ❌ Limited AI features
 
 ### Full Mode (With Setup)
+
 - ✅ Complete authentication system
 - ✅ Database persistence
 - ✅ AI-powered fitness coaching
@@ -103,12 +109,15 @@ npm run type-check
 ### Common Issues
 
 **Error: "Missing Supabase environment variables"**
+
 - Solution: Copy `.env.local.example` to `.env.local` and add your Supabase credentials
 
 **Error: "OpenAI API key not found"**
+
 - Solution: Add your OpenAI API key to `.env.local`
 
 **Error: Build fails**
+
 - Solution: Run `npm run type-check` to see TypeScript errors
 
 ### Need Help?

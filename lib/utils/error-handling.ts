@@ -12,7 +12,7 @@ export enum ErrorType {
   AI_SERVICE = 'AI_SERVICE',
   FILE_UPLOAD = 'FILE_UPLOAD',
   PAYMENT = 'PAYMENT',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 export enum LogLevel {
@@ -20,7 +20,7 @@ export enum LogLevel {
   INFO = 'INFO',
   WARN = 'WARN',
   ERROR = 'ERROR',
-  FATAL = 'FATAL'
+  FATAL = 'FATAL',
 }
 
 // Custom error classes
@@ -56,14 +56,7 @@ export class AppError extends Error {
 
 export class ValidationError extends AppError {
   constructor(message: string, field?: string, userId?: string) {
-    super(
-      message,
-      ErrorType.VALIDATION,
-      400,
-      true,
-      userId,
-      { field }
-    );
+    super(message, ErrorType.VALIDATION, 400, true, userId, { field });
     this.name = 'ValidationError';
   }
 }
@@ -84,42 +77,23 @@ export class AuthorizationError extends AppError {
 
 export class NetworkError extends AppError {
   constructor(message: string, originalError?: Error, userId?: string) {
-    super(
-      message,
-      ErrorType.NETWORK,
-      503,
-      true,
-      userId,
-      { originalError: originalError?.message }
-    );
+    super(message, ErrorType.NETWORK, 503, true, userId, {
+      originalError: originalError?.message,
+    });
     this.name = 'NetworkError';
   }
 }
 
 export class DatabaseError extends AppError {
   constructor(message: string, query?: string, userId?: string) {
-    super(
-      message,
-      ErrorType.DATABASE,
-      500,
-      true,
-      userId,
-      { query }
-    );
+    super(message, ErrorType.DATABASE, 500, true, userId, { query });
     this.name = 'DatabaseError';
   }
 }
 
 export class AIServiceError extends AppError {
   constructor(message: string, service?: string, userId?: string) {
-    super(
-      message,
-      ErrorType.AI_SERVICE,
-      502,
-      true,
-      userId,
-      { service }
-    );
+    super(message, ErrorType.AI_SERVICE, 502, true, userId, { service });
     this.name = 'AIServiceError';
   }
 }
@@ -140,8 +114,9 @@ class Logger {
   private serviceName = 'fitforge-ai';
 
   private formatLogEntry(entry: LogEntry): string {
-    const { level, message, timestamp, userId, error, context, requestId } = entry;
-    
+    const { level, message, timestamp, userId, error, context, requestId } =
+      entry;
+
     const logObject = {
       service: this.serviceName,
       level,
@@ -158,10 +133,10 @@ class Logger {
           ...(error instanceof AppError && {
             type: error.type,
             statusCode: error.statusCode,
-            isOperational: error.isOperational
-          })
-        }
-      })
+            isOperational: error.isOperational,
+          }),
+        },
+      }),
     };
 
     return JSON.stringify(logObject);
@@ -192,7 +167,7 @@ class Logger {
     // External logging service integration (Sentry, LogRocket, etc.)
     try {
       const parsed = JSON.parse(logEntry);
-      
+
       // Sentry integration
       if (typeof window !== 'undefined' && (window as any).Sentry) {
         (window as any).Sentry.captureException(new Error(parsed.message), {
@@ -201,70 +176,90 @@ class Logger {
           level: 'error',
           tags: {
             service: this.serviceName,
-            errorType: parsed.context?.type || 'unknown'
-          }
+            errorType: parsed.context?.type || 'unknown',
+          },
         });
       }
-      
+
       // For server-side logging, you can integrate with services like:
       // - Winston with external transports
       // - DataDog logs
       // - CloudWatch
       // - LogRocket
       // - Splunk
-      
+
       // Example for server-side Sentry (Node.js)
       if (typeof window === 'undefined' && process.env.SENTRY_DSN) {
         // This would require @sentry/node package
         // Sentry.captureException(new Error(parsed.message), { ... });
       }
-      
+
       // Console fallback for development
       if (this.isDevelopment) {
         console.group('🔍 External Logger');
         console.log('Log Entry:', parsed);
         console.groupEnd();
       }
-      
     } catch (e) {
       console.error('Failed to send to external logger:', e);
     }
   }
 
-  debug(message: string, context?: Record<string, any>, userId?: string, requestId?: string): void {
+  debug(
+    message: string,
+    context?: Record<string, any>,
+    userId?: string,
+    requestId?: string
+  ): void {
     this.writeLog({
       level: LogLevel.DEBUG,
       message,
       timestamp: new Date().toISOString(),
       context,
       userId,
-      requestId
+      requestId,
     });
   }
 
-  info(message: string, context?: Record<string, any>, userId?: string, requestId?: string): void {
+  info(
+    message: string,
+    context?: Record<string, any>,
+    userId?: string,
+    requestId?: string
+  ): void {
     this.writeLog({
       level: LogLevel.INFO,
       message,
       timestamp: new Date().toISOString(),
       context,
       userId,
-      requestId
+      requestId,
     });
   }
 
-  warn(message: string, context?: Record<string, any>, userId?: string, requestId?: string): void {
+  warn(
+    message: string,
+    context?: Record<string, any>,
+    userId?: string,
+    requestId?: string
+  ): void {
     this.writeLog({
       level: LogLevel.WARN,
       message,
       timestamp: new Date().toISOString(),
       context,
       userId,
-      requestId
+      requestId,
     });
   }
 
-  error(message: string, error?: Error, context?: Record<string, any>, userId?: string, requestId?: string): void {
+  error(
+    message: string,
+    error?: Error,
+    context?: Record<string, any>,
+    userId?: string,
+    requestId?: string
+  ): void {
     this.writeLog({
       level: LogLevel.ERROR,
       message,
@@ -272,11 +267,17 @@ class Logger {
       error,
       context,
       userId,
-      requestId
+      requestId,
     });
   }
 
-  fatal(message: string, error?: Error, context?: Record<string, any>, userId?: string, requestId?: string): void {
+  fatal(
+    message: string,
+    error?: Error,
+    context?: Record<string, any>,
+    userId?: string,
+    requestId?: string
+  ): void {
     this.writeLog({
       level: LogLevel.FATAL,
       message,
@@ -284,7 +285,7 @@ class Logger {
       error,
       context,
       userId,
-      requestId
+      requestId,
     });
   }
 }
@@ -293,9 +294,18 @@ class Logger {
 export const logger = new Logger();
 
 // Error handling utilities
-export const handleError = (error: unknown, context?: Record<string, any>, userId?: string): AppError => {
+export const handleError = (
+  error: unknown,
+  context?: Record<string, any>,
+  userId?: string
+): AppError => {
   if (error instanceof AppError) {
-    logger.error(error.message, error, { ...context, ...error.context }, userId);
+    logger.error(
+      error.message,
+      error,
+      { ...context, ...error.context },
+      userId
+    );
     return error;
   }
 
@@ -328,7 +338,9 @@ export const handleError = (error: unknown, context?: Record<string, any>, userI
 export const withErrorHandling = <T extends any[], R>(
   fn: (...args: T) => Promise<R>
 ) => {
-  return async (...args: T): Promise<{ success: boolean; data?: R; error?: string }> => {
+  return async (
+    ...args: T
+  ): Promise<{ success: boolean; data?: R; error?: string }> => {
     try {
       const result = await fn(...args);
       return { success: true, data: result };
@@ -336,16 +348,22 @@ export const withErrorHandling = <T extends any[], R>(
       const appError = handleError(error);
       return {
         success: false,
-        error: appError.isOperational ? appError.message : 'An unexpected error occurred'
+        error: appError.isOperational
+          ? appError.message
+          : 'An unexpected error occurred',
       };
     }
   };
 };
 
 // Client-side error boundary helper
-export const reportError = (error: Error, errorInfo?: any, userId?: string): void => {
+export const reportError = (
+  error: Error,
+  errorInfo?: any,
+  userId?: string
+): void => {
   const appError = handleError(error, errorInfo, userId);
-  
+
   // Report to external error tracking service
   if (typeof window !== 'undefined') {
     // Send to error tracking service
@@ -361,23 +379,32 @@ export const measurePerformance = <T>(
 ): T => {
   const start = performance.now();
   const startTime = new Date().toISOString();
-  
+
   try {
     const result = fn();
     const duration = performance.now() - start;
-    
-    logger.info(`Operation completed: ${operationName}`, {
-      duration: `${duration.toFixed(2)}ms`,
-      startTime
-    }, userId);
-    
+
+    logger.info(
+      `Operation completed: ${operationName}`,
+      {
+        duration: `${duration.toFixed(2)}ms`,
+        startTime,
+      },
+      userId
+    );
+
     return result;
   } catch (error) {
     const duration = performance.now() - start;
-    logger.error(`Operation failed: ${operationName}`, error instanceof Error ? error : new Error(String(error)), {
-      duration: `${duration.toFixed(2)}ms`,
-      startTime
-    }, userId);
+    logger.error(
+      `Operation failed: ${operationName}`,
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        duration: `${duration.toFixed(2)}ms`,
+        startTime,
+      },
+      userId
+    );
     throw error;
   }
 };
@@ -390,23 +417,32 @@ export const measureAsyncPerformance = async <T>(
 ): Promise<T> => {
   const start = performance.now();
   const startTime = new Date().toISOString();
-  
+
   try {
     const result = await fn();
     const duration = performance.now() - start;
-    
-    logger.info(`Async operation completed: ${operationName}`, {
-      duration: `${duration.toFixed(2)}ms`,
-      startTime
-    }, userId);
-    
+
+    logger.info(
+      `Async operation completed: ${operationName}`,
+      {
+        duration: `${duration.toFixed(2)}ms`,
+        startTime,
+      },
+      userId
+    );
+
     return result;
   } catch (error) {
     const duration = performance.now() - start;
-    logger.error(`Async operation failed: ${operationName}`, error instanceof Error ? error : new Error(String(error)), {
-      duration: `${duration.toFixed(2)}ms`,
-      startTime
-    }, userId);
+    logger.error(
+      `Async operation failed: ${operationName}`,
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        duration: `${duration.toFixed(2)}ms`,
+        startTime,
+      },
+      userId
+    );
     throw error;
   }
 };

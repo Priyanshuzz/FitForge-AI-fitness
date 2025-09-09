@@ -17,7 +17,7 @@ export enum Sex {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
   OTHER = 'OTHER',
-  PREFER_NOT_TO_SAY = 'PREFER_NOT_TO_SAY'
+  PREFER_NOT_TO_SAY = 'PREFER_NOT_TO_SAY',
 }
 
 export enum ActivityLevel {
@@ -25,13 +25,13 @@ export enum ActivityLevel {
   LIGHT = 'LIGHT',
   MODERATE = 'MODERATE',
   ACTIVE = 'ACTIVE',
-  VERY_ACTIVE = 'VERY_ACTIVE'
+  VERY_ACTIVE = 'VERY_ACTIVE',
 }
 
 export enum FitnessLevel {
   BEGINNER = 'BEGINNER',
   INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED'
+  ADVANCED = 'ADVANCED',
 }
 
 export enum PrimaryGoal {
@@ -40,7 +40,7 @@ export enum PrimaryGoal {
   MAINTAIN = 'MAINTAIN',
   IMPROVE_ENDURANCE = 'IMPROVE_ENDURANCE',
   GENERAL_HEALTH = 'GENERAL_HEALTH',
-  SPORT_SPECIFIC = 'SPORT_SPECIFIC'
+  SPORT_SPECIFIC = 'SPORT_SPECIFIC',
 }
 
 export enum TrainingStyle {
@@ -51,7 +51,7 @@ export enum TrainingStyle {
   BODYWEIGHT = 'BODYWEIGHT',
   YOGA = 'YOGA',
   PILATES = 'PILATES',
-  MIXED = 'MIXED'
+  MIXED = 'MIXED',
 }
 
 export enum Equipment {
@@ -64,7 +64,7 @@ export enum Equipment {
   CABLE_MACHINE = 'CABLE_MACHINE',
   PULL_UP_BAR = 'PULL_UP_BAR',
   CARDIO_EQUIPMENT = 'CARDIO_EQUIPMENT',
-  FULL_GYM = 'FULL_GYM'
+  FULL_GYM = 'FULL_GYM',
 }
 
 export enum DietPreference {
@@ -75,20 +75,20 @@ export enum DietPreference {
   KETO = 'KETO',
   MEDITERRANEAN = 'MEDITERRANEAN',
   PALEO = 'PALEO',
-  INTERMITTENT_FASTING = 'INTERMITTENT_FASTING'
+  INTERMITTENT_FASTING = 'INTERMITTENT_FASTING',
 }
 
 export enum MotivationStyle {
   GENTLE = 'GENTLE',
   FIRM = 'FIRM',
   DATA_DRIVEN = 'DATA_DRIVEN',
-  COMMUNITY = 'COMMUNITY'
+  COMMUNITY = 'COMMUNITY',
 }
 
 export interface IntakeForm {
   id?: string;
   user_id: string;
-  
+
   // Personal Info
   age: number;
   sex: Sex;
@@ -96,7 +96,7 @@ export interface IntakeForm {
   weight_kg: number;
   goal_weight_kg?: number;
   target_date?: string;
-  
+
   // Fitness Assessment
   activity_level: ActivityLevel;
   training_styles: TrainingStyle[];
@@ -104,27 +104,27 @@ export interface IntakeForm {
   session_minutes: number;
   equipment: Equipment[];
   fitness_level: FitnessLevel;
-  
+
   // Health & Nutrition
   injuries_limitations?: string;
   diet_preferences: DietPreference[];
   food_allergies?: string;
   cuisine_preferences?: string[];
   foods_to_avoid?: string;
-  
+
   // Goals & Motivation
   primary_goal: PrimaryGoal;
   motivation_style: MotivationStyle;
-  
+
   // Permissions
   photo_permission: boolean;
   medical_consent: boolean;
   terms_accepted: boolean;
-  
+
   // Calculated values
   calculated_bmr?: number;
   calculated_tdee?: number;
-  
+
   created_at?: string;
 }
 
@@ -133,13 +133,13 @@ export enum WorkoutStatus {
   SCHEDULED = 'SCHEDULED',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
-  SKIPPED = 'SKIPPED'
+  SKIPPED = 'SKIPPED',
 }
 
 export enum DifficultyLevel {
   BEGINNER = 'BEGINNER',
   INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED'
+  ADVANCED = 'ADVANCED',
 }
 
 export interface Exercise {
@@ -164,19 +164,19 @@ export interface Workout {
   duration_min: number;
   difficulty_level: DifficultyLevel;
   status: WorkoutStatus;
-  
+
   // Workout structure
   warmup: Exercise[];
   exercises: Exercise[];
   cooldown: Exercise[];
-  
+
   // Tracking data
   estimated_calories_burned?: number;
   actual_duration_min?: number;
   calories_burned?: number;
   user_rating?: number; // 1-5 stars
   user_notes?: string;
-  
+
   // Timestamps
   started_at?: string;
   completed_at?: string;
@@ -188,20 +188,20 @@ export enum MealType {
   BREAKFAST = 'BREAKFAST',
   LUNCH = 'LUNCH',
   DINNER = 'DINNER',
-  SNACK = 'SNACK'
+  SNACK = 'SNACK',
 }
 
 export enum MealStatus {
   PLANNED = 'PLANNED',
   PREPARED = 'PREPARED',
   CONSUMED = 'CONSUMED',
-  SKIPPED = 'SKIPPED'
+  SKIPPED = 'SKIPPED',
 }
 
 export interface Macros {
   protein: number; // grams
-  carbs: number;   // grams
-  fat: number;     // grams
+  carbs: number; // grams
+  fat: number; // grams
 }
 
 export interface Meal {
@@ -211,29 +211,29 @@ export interface Meal {
   meal_date: string;
   meal_type: MealType;
   name: string;
-  
+
   // Nutrition info
   calories: number;
   macros: Macros;
-  
+
   // Recipe details
   ingredients: string[];
   prep_time_min?: number;
   recipe_instructions?: string;
-  
+
   // Tracking
   status: MealStatus;
   user_rating?: number; // 1-5 stars
   user_notes?: string;
   consumed_at?: string;
-  
+
   created_at?: string;
 }
 
 // Plan Types
 export enum PlanType {
   WEEKLY = 'WEEKLY',
-  MONTHLY = 'MONTHLY'
+  MONTHLY = 'MONTHLY',
 }
 
 export enum PlanStatus {
@@ -241,7 +241,7 @@ export enum PlanStatus {
   ACTIVE = 'ACTIVE',
   COMPLETED = 'COMPLETED',
   ARCHIVED = 'ARCHIVED',
-  FAILED = 'FAILED'
+  FAILED = 'FAILED',
 }
 
 export interface CalorieCalculation {
@@ -259,15 +259,15 @@ export interface Plan {
   status: PlanStatus;
   start_date: string;
   end_date: string;
-  
+
   // Nutrition targets
   daily_calorie_target: number;
   calorie_calculation: CalorieCalculation;
-  
+
   // Plan metadata
   generation_prompt_hash?: string;
   llm_response_cached?: boolean;
-  
+
   // Generated content
   weekly_workouts?: Workout[];
   meal_plan?: Meal[];
@@ -275,7 +275,7 @@ export interface Plan {
   notes?: string;
   weekly_tips?: string[];
   check_in_questions?: string[];
-  
+
   created_at?: string;
   updated_at?: string;
 }
@@ -285,33 +285,33 @@ export interface ProgressEntry {
   id?: string;
   user_id: string;
   entry_date: string;
-  
+
   // Measurements
   weight_kg?: number;
   body_fat_percentage?: number;
   muscle_mass_kg?: number;
-  
+
   // Body measurements (in cm)
   waist_circumference?: number;
   chest_circumference?: number;
   arm_circumference?: number;
   thigh_circumference?: number;
-  
+
   // Progress photos
   photo_urls?: string[];
-  
+
   // Notes
   notes?: string;
   mood_rating?: number; // 1-5
   energy_level?: number; // 1-5
-  
+
   created_at?: string;
 }
 
 // Chat Types
 export enum MessageType {
   USER = 'USER',
-  ASSISTANT = 'ASSISTANT'
+  ASSISTANT = 'ASSISTANT',
 }
 
 export interface ChatMessage {
@@ -320,11 +320,11 @@ export interface ChatMessage {
   message_type: MessageType;
   content: string;
   context_data?: Record<string, any>;
-  
+
   // AI response metadata
   response_cached?: boolean;
   tokens_used?: number;
-  
+
   created_at?: string;
 }
 
@@ -430,7 +430,7 @@ export enum NotificationType {
   PROGRESS_CHECK = 'PROGRESS_CHECK',
   PLAN_READY = 'PLAN_READY',
   MOTIVATIONAL = 'MOTIVATIONAL',
-  ACHIEVEMENT = 'ACHIEVEMENT'
+  ACHIEVEMENT = 'ACHIEVEMENT',
 }
 
 export interface NotificationPreferences {
@@ -439,7 +439,7 @@ export interface NotificationPreferences {
   progress_reminders: boolean;
   motivational_messages: boolean;
   quiet_hours_start?: string; // "22:00"
-  quiet_hours_end?: string;   // "07:00"
+  quiet_hours_end?: string; // "07:00"
 }
 
 // Enhanced Plan Types for Display Components

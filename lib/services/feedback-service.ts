@@ -27,7 +27,9 @@ class FeedbackService {
   /**
    * Submit feedback for a chat message
    */
-  async submitFeedback(feedback: Omit<MessageFeedback, 'id' | 'created_at'>): Promise<{ success: boolean; error?: string }> {
+  async submitFeedback(
+    feedback: Omit<MessageFeedback, 'id' | 'created_at'>
+  ): Promise<{ success: boolean; error?: string }> {
     if (!this.supabase) {
       logger.warn('Supabase not configured, storing feedback locally');
       this.storeLocalFeedback(feedback);
@@ -37,34 +39,40 @@ class FeedbackService {
     try {
       const { data, error } = await this.supabase
         .from('message_feedback')
-        .insert([{
-          message_id: feedback.message_id,
-          user_id: feedback.user_id,
-          feedback_type: feedback.feedback_type,
-          feedback_text: feedback.feedback_text,
-          created_at: new Date().toISOString()
-        }]);
+        .insert([
+          {
+            message_id: feedback.message_id,
+            user_id: feedback.user_id,
+            feedback_type: feedback.feedback_type,
+            feedback_text: feedback.feedback_text,
+            created_at: new Date().toISOString(),
+          },
+        ]);
 
       if (error) {
         logger.error('Failed to submit feedback', error, { feedback });
         throw error;
       }
 
-      logger.info('Feedback submitted successfully', { 
-        messageId: feedback.message_id, 
-        type: feedback.feedback_type 
+      logger.info('Feedback submitted successfully', {
+        messageId: feedback.message_id,
+        type: feedback.feedback_type,
       });
 
       return { success: true };
-
     } catch (error) {
-      logger.error('Error submitting feedback', error instanceof Error ? error : new Error(String(error)), { feedback });
-      
+      logger.error(
+        'Error submitting feedback',
+        error instanceof Error ? error : new Error(String(error)),
+        { feedback }
+      );
+
       // Fallback to local storage
       this.storeLocalFeedback(feedback);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to submit feedback' 
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Failed to submit feedback',
       };
     }
   }
@@ -90,9 +98,12 @@ class FeedbackService {
       }
 
       return data || [];
-
     } catch (error) {
-      logger.error('Error getting message feedback', error instanceof Error ? error : new Error(String(error)), { messageId });
+      logger.error(
+        'Error getting message feedback',
+        error instanceof Error ? error : new Error(String(error)),
+        { messageId }
+      );
       return this.getLocalFeedback(messageId);
     }
   }
@@ -113,24 +124,37 @@ class FeedbackService {
 
       if (error) {
         logger.error('Failed to get feedback stats', error, { userId });
-        return { total_feedback: 0, positive_count: 0, negative_count: 0, satisfaction_rate: 0 };
+        return {
+          total_feedback: 0,
+          positive_count: 0,
+          negative_count: 0,
+          satisfaction_rate: 0,
+        };
       }
 
       const feedback = data || [];
       const totalFeedback = feedback.length;
-      const positiveCount = feedback.filter(f => f.feedback_type === 'positive').length;
-      const negativeCount = feedback.filter(f => f.feedback_type === 'negative').length;
-      const satisfactionRate = totalFeedback > 0 ? (positiveCount / totalFeedback) * 100 : 0;
+      const positiveCount = feedback.filter(
+        f => f.feedback_type === 'positive'
+      ).length;
+      const negativeCount = feedback.filter(
+        f => f.feedback_type === 'negative'
+      ).length;
+      const satisfactionRate =
+        totalFeedback > 0 ? (positiveCount / totalFeedback) * 100 : 0;
 
       return {
         total_feedback: totalFeedback,
         positive_count: positiveCount,
         negative_count: negativeCount,
-        satisfaction_rate: Math.round(satisfactionRate * 100) / 100
+        satisfaction_rate: Math.round(satisfactionRate * 100) / 100,
       };
-
     } catch (error) {
-      logger.error('Error getting feedback stats', error instanceof Error ? error : new Error(String(error)), { userId });
+      logger.error(
+        'Error getting feedback stats',
+        error instanceof Error ? error : new Error(String(error)),
+        { userId }
+      );
       return this.getLocalFeedbackStats(userId);
     }
   }
@@ -138,22 +162,28 @@ class FeedbackService {
   /**
    * Store feedback locally when Supabase is not available
    */
-  private storeLocalFeedback(feedback: Omit<MessageFeedback, 'id' | 'created_at'>): void {
+  private storeLocalFeedback(
+    feedback: Omit<MessageFeedback, 'id' | 'created_at'>
+  ): void {
     try {
       const localFeedback = localStorage.getItem('fitforge_feedback') || '[]';
       const feedbackArray = JSON.parse(localFeedback);
-      
+
       feedbackArray.push({
         ...feedback,
         id: Date.now().toString(),
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       });
 
       localStorage.setItem('fitforge_feedback', JSON.stringify(feedbackArray));
-      logger.info('Feedback stored locally', { messageId: feedback.message_id });
-
+      logger.info('Feedback stored locally', {
+        messageId: feedback.message_id,
+      });
     } catch (error) {
-      logger.error('Failed to store feedback locally', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to store feedback locally',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 
@@ -164,9 +194,14 @@ class FeedbackService {
     try {
       const localFeedback = localStorage.getItem('fitforge_feedback') || '[]';
       const feedbackArray = JSON.parse(localFeedback);
-      return feedbackArray.filter((f: MessageFeedback) => f.message_id === messageId);
+      return feedbackArray.filter(
+        (f: MessageFeedback) => f.message_id === messageId
+      );
     } catch (error) {
-      logger.error('Failed to get local feedback', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to get local feedback',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -178,23 +213,37 @@ class FeedbackService {
     try {
       const localFeedback = localStorage.getItem('fitforge_feedback') || '[]';
       const feedbackArray = JSON.parse(localFeedback);
-      const userFeedback = feedbackArray.filter((f: MessageFeedback) => f.user_id === userId);
-      
+      const userFeedback = feedbackArray.filter(
+        (f: MessageFeedback) => f.user_id === userId
+      );
+
       const totalFeedback = userFeedback.length;
-      const positiveCount = userFeedback.filter((f: MessageFeedback) => f.feedback_type === 'positive').length;
-      const negativeCount = userFeedback.filter((f: MessageFeedback) => f.feedback_type === 'negative').length;
-      const satisfactionRate = totalFeedback > 0 ? (positiveCount / totalFeedback) * 100 : 0;
+      const positiveCount = userFeedback.filter(
+        (f: MessageFeedback) => f.feedback_type === 'positive'
+      ).length;
+      const negativeCount = userFeedback.filter(
+        (f: MessageFeedback) => f.feedback_type === 'negative'
+      ).length;
+      const satisfactionRate =
+        totalFeedback > 0 ? (positiveCount / totalFeedback) * 100 : 0;
 
       return {
         total_feedback: totalFeedback,
         positive_count: positiveCount,
         negative_count: negativeCount,
-        satisfaction_rate: Math.round(satisfactionRate * 100) / 100
+        satisfaction_rate: Math.round(satisfactionRate * 100) / 100,
       };
-
     } catch (error) {
-      logger.error('Failed to get local feedback stats', error instanceof Error ? error : new Error(String(error)));
-      return { total_feedback: 0, positive_count: 0, negative_count: 0, satisfaction_rate: 0 };
+      logger.error(
+        'Failed to get local feedback stats',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      return {
+        total_feedback: 0,
+        positive_count: 0,
+        negative_count: 0,
+        satisfaction_rate: 0,
+      };
     }
   }
 }

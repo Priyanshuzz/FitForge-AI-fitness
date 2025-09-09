@@ -3,6 +3,7 @@
 ## 📱 FLUTTER APP STRUCTURE
 
 ### Project Structure
+
 ```
 lib/
 ├── main.dart
@@ -37,6 +38,7 @@ lib/
 ### Key Implementation Examples
 
 #### main.dart
+
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,21 +49,22 @@ import 'core/di/injection_container.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Firebase
   await Firebase.initializeApp();
-  
+
   // Initialize Hive
   await Hive.initFlutter();
-  
+
   // Initialize dependencies
   await di.init();
-  
+
   runApp(const FitForgeApp());
 }
 ```
 
 #### BLoC State Management Example
+
 ```dart
 // auth/presentation/bloc/auth_bloc.dart
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -83,29 +86,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    
+
     try {
       final result = await authRepository.login(
         email: event.email,
         password: event.password,
       );
-      
+
       await tokenStorage.storeTokens(
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
       );
-      
+
       emit(AuthAuthenticated(user: result.user));
     } catch (error) {
       emit(AuthError(message: error.toString()));
     }
   }
-  
+
   // Other event handlers...
 }
 ```
 
 #### Intake Form Screen
+
 ```dart
 // onboarding/presentation/pages/intake_form_page.dart
 class IntakeFormPage extends StatefulWidget {
@@ -117,7 +121,7 @@ class _IntakeFormPageState extends State<IntakeFormPage> {
   final PageController _pageController = PageController();
   final IntakeFormData _formData = IntakeFormData();
   int _currentPage = 0;
-  
+
   final List<Widget> _pages = [];
 
   @override
@@ -204,7 +208,7 @@ class _IntakeFormPageState extends State<IntakeFormPage> {
       ),
     );
   }
-  
+
   // Navigation methods...
 }
 ```
@@ -214,6 +218,7 @@ class _IntakeFormPageState extends State<IntakeFormPage> {
 ## 🔧 SPRING BOOT BACKEND STRUCTURE
 
 ### Project Structure
+
 ```
 src/main/java/com/fitforge/
 ├── FitForgeApplication.java
@@ -255,6 +260,7 @@ src/main/java/com/fitforge/
 ### Key Implementation Examples
 
 #### Security Configuration
+
 ```java
 @Configuration
 @EnableWebSecurity
@@ -295,7 +301,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             );
 
-        http.addFilterBefore(jwtAuthenticationFilter, 
+        http.addFilterBefore(jwtAuthenticationFilter,
                            UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -304,6 +310,7 @@ public class SecurityConfig {
 ```
 
 #### Authentication Controller
+
 ```java
 @RestController
 @RequestMapping("/api/auth")
@@ -316,7 +323,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
             @Valid @RequestBody UserRegistrationDto registrationDto) {
-        
+
         AuthResponse response = authService.register(registrationDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -324,7 +331,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginDto loginDto) {
-        
+
         AuthResponse response = authService.login(loginDto);
         return ResponseEntity.ok(response);
     }
@@ -332,7 +339,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<TokenRefreshResponse> refreshToken(
             @Valid @RequestBody TokenRefreshDto refreshDto) {
-        
+
         TokenRefreshResponse response = authService.refreshToken(refreshDto);
         return ResponseEntity.ok(response);
     }
@@ -342,7 +349,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse> logout(
             @Valid @RequestBody LogoutDto logoutDto,
             Authentication authentication) {
-        
+
         authService.logout(logoutDto.getRefreshToken(), authentication.getName());
         return ResponseEntity.ok(new ApiResponse("Logged out successfully"));
     }
@@ -350,6 +357,7 @@ public class AuthController {
 ```
 
 #### Plan Generation Service
+
 ```java
 @Service
 @Transactional
@@ -375,7 +383,7 @@ public class PlanGenerationService {
         plan.setStatus(PlanStatus.GENERATING);
         plan.setStartDate(request.getStartDate());
         plan.setEndDate(request.getStartDate().plusDays(7));
-        
+
         plan = planRepository.save(plan);
 
         // Queue background job
@@ -407,7 +415,7 @@ public class PlanGenerationService {
             } else {
                 // Generate new plan via LLM
                 planData = llmService.generateWeeklyPlan(intakeForm);
-                
+
                 // Cache the result
                 redisTemplate.opsForValue().set(cacheKey, planData, Duration.ofHours(24));
             }
@@ -415,11 +423,11 @@ public class PlanGenerationService {
             // Update plan entity
             Plan plan = planRepository.findById(job.getPlanId())
                 .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
-            
+
             plan.setPlanData(objectMapper.writeValueAsString(planData));
             plan.setStatus(PlanStatus.ACTIVE);
             plan.setDailyCalorieTarget(planData.getCalorieCalculation().getDailyTarget());
-            
+
             planRepository.save(plan);
 
             // Create individual workout and meal entities
@@ -431,23 +439,24 @@ public class PlanGenerationService {
 
         } catch (Exception e) {
             log.error("Error generating plan for job: {}", job, e);
-            
+
             // Update plan status to failed
             planRepository.findById(job.getPlanId()).ifPresent(plan -> {
                 plan.setStatus(PlanStatus.FAILED);
                 planRepository.save(plan);
             });
-            
+
             // Send error notification
             notificationService.sendPlanErrorNotification(job.getUserId());
         }
     }
-    
+
     // Helper methods...
 }
 ```
 
 #### LLM Service Integration
+
 ```java
 @Service
 public class LLMService {
@@ -466,7 +475,7 @@ public class LLMService {
 
     public PlanData generateWeeklyPlan(IntakeForm intakeForm) {
         String prompt = buildPlanGenerationPrompt(intakeForm);
-        
+
         // Check cache first
         String cacheKey = "llm:plan:" + DigestUtils.md5Hex(prompt);
         PlanData cached = (PlanData) redisTemplate.opsForValue().get(cacheKey);
@@ -514,7 +523,7 @@ public class LLMService {
     private String buildPlanGenerationPrompt(IntakeForm intakeForm) {
         return String.format("""
             Generate a personalized 7-day fitness and nutrition plan for:
-            
+
             USER PROFILE:
             - Age: %d, Sex: %s
             - Height: %.1f cm, Weight: %.1f kg
@@ -529,7 +538,7 @@ public class LLMService {
             - Diet preferences: %s
             - Food allergies: %s
             - Primary goal: %s
-            
+
             Follow the response schema exactly as specified in the system prompt.
             """,
             intakeForm.getAge(),
@@ -549,7 +558,7 @@ public class LLMService {
             intakeForm.getPrimaryGoal()
         );
     }
-    
+
     // Other LLM methods...
 }
 ```
@@ -559,6 +568,7 @@ public class LLMService {
 ## 🗄️ DATABASE MIGRATIONS
 
 ### Initial Schema Migration
+
 ```sql
 -- V1__Create_initial_schema.sql
 
@@ -575,7 +585,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login_at TIMESTAMP,
-    
+
     INDEX idx_email (email),
     INDEX idx_created_at (created_at)
 );
@@ -609,7 +619,7 @@ CREATE TABLE intake_forms (
     calculated_bmr DECIMAL(8,2),
     calculated_tdee DECIMAL(8,2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_created_at (created_at)
@@ -632,7 +642,7 @@ CREATE TABLE plans (
     llm_response_cached BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (intake_form_id) REFERENCES intake_forms(id),
     INDEX idx_user_id (user_id),
@@ -644,11 +654,12 @@ CREATE TABLE plans (
 ```
 
 ### Sample Data Migration
+
 ```sql
 -- V2__Insert_sample_data.sql
 
 -- Sample admin user
-INSERT INTO admin_users (email, password_hash, name, role) VALUES 
+INSERT INTO admin_users (email, password_hash, name, role) VALUES
 ('admin@fitforge.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqttf98.fm/AZfG/1qONlHa', 'Admin User', 'ADMIN');
 
 -- Sample exercise templates
@@ -668,6 +679,7 @@ INSERT INTO meal_templates (name, meal_type, cuisine_type, diet_preferences, pre
 ## 🔒 SECURITY & PRIVACY
 
 ### JWT Implementation
+
 ```java
 @Component
 public class JwtTokenProvider {
@@ -736,6 +748,7 @@ public class JwtTokenProvider {
 ```
 
 ### Rate Limiting
+
 ```java
 @Component
 public class RateLimitingService {
@@ -746,17 +759,17 @@ public class RateLimitingService {
     public boolean isAllowed(String key, int maxRequests, Duration window) {
         String redisKey = "rate_limit:" + key;
         String currentCount = redisTemplate.opsForValue().get(redisKey);
-        
+
         if (currentCount == null) {
             redisTemplate.opsForValue().set(redisKey, "1", window);
             return true;
         }
-        
+
         int count = Integer.parseInt(currentCount);
         if (count >= maxRequests) {
             return false;
         }
-        
+
         redisTemplate.opsForValue().increment(redisKey);
         return true;
     }
@@ -772,20 +785,21 @@ public class ChatController {
     public ResponseEntity<ChatResponse> sendMessage(
             @RequestBody ChatMessageDto messageDto,
             Authentication authentication) {
-        
+
         String userId = authentication.getName();
-        
+
         // Rate limit: 10 messages per minute
         if (!rateLimitingService.isAllowed("chat:" + userId, 10, Duration.ofMinutes(1))) {
             throw new RateLimitExceededException("Too many chat messages. Please wait.");
         }
-        
+
         // Process message...
     }
 }
 ```
 
 ### Data Privacy Compliance
+
 ```java
 @Service
 public class DataPrivacyService {
@@ -806,20 +820,20 @@ public class DataPrivacyService {
         user.setName("Deleted User");
         user.setPhone(null);
         user.setIsActive(false);
-        
+
         // Delete sensitive data
         intakeFormRepository.deleteByUserId(userId);
         progressEntryRepository.deleteByUserId(userId);
         chatHistoryRepository.deleteByUserId(userId);
-        
+
         // Archive plans (remove personal data)
         planRepository.findByUserId(userId).forEach(plan -> {
             plan.setStatus(PlanStatus.ARCHIVED);
             // Remove personal identifiers from plan data
         });
-        
+
         userRepository.save(user);
-        
+
         // Log deletion for audit
         auditLogService.logDataDeletion(userId, "User requested data deletion");
     }

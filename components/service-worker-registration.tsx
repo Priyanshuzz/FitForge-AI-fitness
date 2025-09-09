@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { logger } from '@/lib/utils/error-handling';
 
 export function ServiceWorkerRegistration() {
@@ -8,10 +8,10 @@ export function ServiceWorkerRegistration() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js')
-        .then((registration) => {
+        .then(registration => {
           logger.info('Service Worker registered successfully', {
             scope: registration.scope,
-            updatefound: !!registration.updatefound
+            updatefound: !!registration.updatefound,
           });
 
           // Check for updates
@@ -19,11 +19,18 @@ export function ServiceWorkerRegistration() {
             const newWorker = registration.installing;
             if (newWorker) {
               logger.info('New Service Worker version available');
-              
+
               newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                if (
+                  newWorker.state === 'installed' &&
+                  navigator.serviceWorker.controller
+                ) {
                   // New version available, show update prompt
-                  if (confirm('A new version of FitForge AI is available. Would you like to update?')) {
+                  if (
+                    confirm(
+                      'A new version of FitForge AI is available. Would you like to update?'
+                    )
+                  ) {
                     window.location.reload();
                   }
                 }
@@ -31,14 +38,14 @@ export function ServiceWorkerRegistration() {
             }
           });
         })
-        .catch((error) => {
+        .catch(error => {
           logger.error('Service Worker registration failed', error);
         });
 
       // Listen for service worker messages
-      navigator.serviceWorker.addEventListener('message', (event) => {
+      navigator.serviceWorker.addEventListener('message', event => {
         logger.info('Message from Service Worker', { data: event.data });
-        
+
         if (event.data && event.data.type === 'CACHE_UPDATED') {
           // Handle cache updates
           console.log('Cache updated:', event.data.url);
@@ -47,8 +54,11 @@ export function ServiceWorkerRegistration() {
     }
 
     // Register for background sync (if supported)
-    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-      navigator.serviceWorker.ready.then((registration) => {
+    if (
+      'serviceWorker' in navigator &&
+      'sync' in window.ServiceWorkerRegistration.prototype
+    ) {
+      navigator.serviceWorker.ready.then(registration => {
         // This will be used when user goes offline and comes back online
         logger.info('Background sync is supported');
       });
@@ -57,7 +67,7 @@ export function ServiceWorkerRegistration() {
     // Request notification permission
     if ('Notification' in window && 'serviceWorker' in navigator) {
       if (Notification.permission === 'default') {
-        Notification.requestPermission().then((permission) => {
+        Notification.requestPermission().then(permission => {
           logger.info('Notification permission', { permission });
         });
       }
@@ -72,7 +82,7 @@ export function ServiceWorkerRegistration() {
       // Stash the event so it can be triggered later
       deferredPrompt = e;
       logger.info('App install prompt available');
-      
+
       // Show custom install button/prompt
       showInstallPrompt();
     };
@@ -88,16 +98,20 @@ export function ServiceWorkerRegistration() {
 
     // Cleanup
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
-  }, []);
+  }, [showInstallPrompt, hideInstallPrompt]);
 
-  const showInstallPrompt = () => {
+  const showInstallPrompt = useCallback(() => {
     // Create and show custom install prompt
     const installBanner = document.createElement('div');
     installBanner.id = 'install-banner';
-    installBanner.className = 'fixed top-0 left-0 right-0 bg-primary text-white p-4 text-center z-50';
+    installBanner.className =
+      'fixed top-0 left-0 right-0 bg-primary text-white p-4 text-center z-50';
     installBanner.innerHTML = `
       <div class="flex items-center justify-between max-w-4xl mx-auto">
         <span>Install FitForge AI for the best experience!</span>
@@ -107,32 +121,34 @@ export function ServiceWorkerRegistration() {
         </div>
       </div>
     `;
-    
+
     document.body.appendChild(installBanner);
 
     // Handle install button click
-    document.getElementById('install-btn')?.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        logger.info('Install prompt outcome', { outcome });
-        hideInstallPrompt();
-        deferredPrompt = null;
-      }
-    });
+    document
+      .getElementById('install-btn')
+      ?.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          logger.info('Install prompt outcome', { outcome });
+          hideInstallPrompt();
+          deferredPrompt = null;
+        }
+      });
 
     // Handle dismiss button click
     document.getElementById('dismiss-btn')?.addEventListener('click', () => {
       hideInstallPrompt();
     });
-  };
+  }, [hideInstallPrompt]);
 
-  const hideInstallPrompt = () => {
+  const hideInstallPrompt = useCallback(() => {
     const banner = document.getElementById('install-banner');
     if (banner) {
       banner.remove();
     }
-  };
+  }, []);
 
   return null; // This component doesn't render anything
 }
@@ -141,7 +157,10 @@ export function ServiceWorkerRegistration() {
 export const PWAUtils = {
   // Check if app is running as PWA
   isPWA: () => {
-    return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+    return (
+      window.matchMedia &&
+      window.matchMedia('(display-mode: standalone)').matches
+    );
   },
 
   // Check if app is installable
@@ -156,12 +175,19 @@ export const PWAUtils = {
 
   // Check if push notifications are supported
   isPushNotificationSupported: () => {
-    return 'PushManager' in window && 'Notification' in window && 'serviceWorker' in navigator;
+    return (
+      'PushManager' in window &&
+      'Notification' in window &&
+      'serviceWorker' in navigator
+    );
   },
 
   // Check if background sync is supported
   isBackgroundSyncSupported: () => {
-    return 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype;
+    return (
+      'serviceWorker' in navigator &&
+      'sync' in window.ServiceWorkerRegistration.prototype
+    );
   },
 
   // Subscribe to push notifications
@@ -178,11 +204,11 @@ export const PWAUtils = {
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY // You'll need to add this
+      applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY, // You'll need to add this
     });
 
-    logger.info('Push notification subscription created', { 
-      endpoint: subscription.endpoint 
+    logger.info('Push notification subscription created', {
+      endpoint: subscription.endpoint,
     });
 
     return subscription;
@@ -206,10 +232,10 @@ export const PWAUtils = {
   addNetworkListeners: (onOnline: () => void, onOffline: () => void) => {
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
-    
+
     return () => {
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
     };
-  }
+  },
 };

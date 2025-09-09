@@ -24,45 +24,48 @@ interface IntakeFormWizardProps {
 }
 
 const STEPS = [
-  { 
-    id: 0, 
-    title: 'Personal Information', 
+  {
+    id: 0,
+    title: 'Personal Information',
     description: 'Tell us about yourself',
-    component: PersonalInfoStep
+    component: PersonalInfoStep,
   },
-  { 
-    id: 1, 
-    title: 'Physical Profile', 
+  {
+    id: 1,
+    title: 'Physical Profile',
     description: 'Your measurements and goals',
-    component: PhysicalProfileStep
+    component: PhysicalProfileStep,
   },
-  { 
-    id: 2, 
-    title: 'Fitness Assessment', 
+  {
+    id: 2,
+    title: 'Fitness Assessment',
     description: 'Your activity level and preferences',
-    component: FitnessAssessmentStep
+    component: FitnessAssessmentStep,
   },
-  { 
-    id: 3, 
-    title: 'Health & Nutrition', 
+  {
+    id: 3,
+    title: 'Health & Nutrition',
     description: 'Dietary preferences and limitations',
-    component: HealthNutritionStep
+    component: HealthNutritionStep,
   },
-  { 
-    id: 4, 
-    title: 'Goals & Motivation', 
+  {
+    id: 4,
+    title: 'Goals & Motivation',
     description: 'What drives you to succeed',
-    component: GoalsMotivationStep
+    component: GoalsMotivationStep,
   },
-  { 
-    id: 5, 
-    title: 'Terms & Consent', 
+  {
+    id: 5,
+    title: 'Terms & Consent',
     description: 'Final confirmations',
-    component: ConsentStep
-  }
+    component: ConsentStep,
+  },
 ];
 
-export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps) {
+export function IntakeFormWizard({
+  onComplete,
+  onCancel,
+}: IntakeFormWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<IntakeForm>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,7 +81,7 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
 
   const validateCurrentStep = () => {
     const result = validateIntakeFormStep(currentStep, formData);
-    
+
     if (!result.success) {
       const newErrors: Record<string, string> = {};
       result.error.errors.forEach(error => {
@@ -87,14 +90,14 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
       setErrors(newErrors);
       return false;
     }
-    
+
     return true;
   };
 
   const handleNext = () => {
     if (validateCurrentStep()) {
       setCompletedSteps(prev => new Set([...prev, currentStep]));
-      
+
       if (currentStep < STEPS.length - 1) {
         setCurrentStep(prev => prev + 1);
       } else {
@@ -113,11 +116,11 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
     if (!validateCurrentStep()) return;
 
     setIsSubmitting(true);
-    
+
     try {
       // Create FormData for submission
       const submitData = new FormData();
-      
+
       // Add all form data to FormData
       Object.entries(formData).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -132,7 +135,7 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
       });
 
       const result = await submitIntakeForm(submitData);
-      
+
       if (result.success && result.jobId) {
         onComplete?.(result.jobId);
       } else {
@@ -140,8 +143,9 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
       }
     } catch (error) {
       console.error('Error submitting intake form:', error);
-      setErrors({ 
-        submit: error instanceof Error ? error.message : 'Failed to submit form' 
+      setErrors({
+        submit:
+          error instanceof Error ? error.message : 'Failed to submit form',
       });
     } finally {
       setIsSubmitting(false);
@@ -165,27 +169,32 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
         <CardContent className="pt-6">
           <div className="space-y-4">
             <div className="flex justify-between text-sm">
-              <span>Step {currentStep + 1} of {STEPS.length}</span>
+              <span>
+                Step {currentStep + 1} of {STEPS.length}
+              </span>
               <span>{Math.round(progress)}% Complete</span>
             </div>
             <Progress value={progress} className="h-2" />
-            
+
             {/* Step Indicators */}
             <div className="flex justify-between">
               {STEPS.map((step, index) => (
-                <div 
-                  key={step.id} 
+                <div
+                  key={step.id}
                   className="flex flex-col items-center space-y-2"
                 >
-                  <div className={`
+                  <div
+                    className={`
                     w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold
-                    ${index < currentStep || completedSteps.has(index)
-                      ? 'bg-primary text-primary-foreground' 
-                      : index === currentStep
-                        ? 'bg-primary/20 text-primary border-2 border-primary'
-                        : 'bg-muted text-muted-foreground'
+                    ${
+                      index < currentStep || completedSteps.has(index)
+                        ? 'bg-primary text-primary-foreground'
+                        : index === currentStep
+                          ? 'bg-primary/20 text-primary border-2 border-primary'
+                          : 'bg-muted text-muted-foreground'
                     }
-                  `}>
+                  `}
+                  >
                     {completedSteps.has(index) ? (
                       <CheckCircle2 className="w-5 h-5" />
                     ) : (
@@ -194,7 +203,9 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
                   </div>
                   <div className="text-center hidden sm:block">
                     <div className="text-xs font-medium">{step.title}</div>
-                    <div className="text-xs text-muted-foreground">{step.description}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {step.description}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -251,8 +262,8 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
               Cancel
             </Button>
           )}
-          
-          <Button 
+
+          <Button
             onClick={handleNext}
             disabled={isSubmitting}
             className="min-w-[120px]"
@@ -260,7 +271,9 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                {currentStep === STEPS.length - 1 ? 'Submitting...' : 'Processing...'}
+                {currentStep === STEPS.length - 1
+                  ? 'Submitting...'
+                  : 'Processing...'}
               </>
             ) : currentStep === STEPS.length - 1 ? (
               'Complete Setup'
@@ -277,8 +290,8 @@ export function IntakeFormWizard({ onComplete, onCancel }: IntakeFormWizardProps
       {/* Help Text */}
       <div className="text-center text-sm text-muted-foreground">
         <p>
-          This information helps us create your personalized fitness plan. 
-          All data is encrypted and secure.
+          This information helps us create your personalized fitness plan. All
+          data is encrypted and secure.
         </p>
       </div>
     </div>

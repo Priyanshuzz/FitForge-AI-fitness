@@ -22,8 +22,9 @@ npm run dev
 ```
 
 **Demo Mode Features:**
+
 - ✅ Full UI/UX experience
-- ✅ Component interactions  
+- ✅ Component interactions
 - ✅ Visual feedback
 - ❌ No data persistence
 - ❌ No authentication
@@ -36,11 +37,13 @@ npm run dev
 Unlock all features with database, authentication, and AI:
 
 ### Option 1: Interactive Setup (Recommended)
+
 ```bash
 npm run setup
 ```
 
 ### Option 2: Manual Setup
+
 ```bash
 # Copy environment template
 cp .env.local.example .env.local
@@ -51,30 +54,35 @@ cp .env.local.example .env.local
 ```
 
 **Get Your Credentials:**
+
 - **Supabase**: [supabase.com](https://supabase.com) → Create project → Settings → API
 - **OpenAI**: [platform.openai.com](https://platform.openai.com) → Create API key
 
 ## ✨ Features
 
 ### 🤖 AI-Powered Coaching
+
 - Personalized workout plans
-- Nutrition guidance and meal planning  
+- Nutrition guidance and meal planning
 - Real-time chat with AI coach
 - Adaptive plan adjustments based on progress
 
 ### 📊 Progress Tracking
+
 - Photo progress comparisons
 - Detailed analytics and insights
 - Workout and nutrition logging
 - Performance metrics
 
 ### 🔐 Authentication & Security
+
 - Email/password authentication
 - Google OAuth integration
 - Secure session management
 - Protected routes and data
 
 ### 📱 Modern Experience
+
 - Progressive Web App (PWA)
 - Offline functionality
 - Mobile-responsive design
@@ -103,7 +111,7 @@ npm run build        # Production build
 npm run start        # Start production server
 npm run type-check   # TypeScript validation
 
-# Testing  
+# Testing
 npm run test         # Unit tests
 npm run test:watch   # Watch mode
 npm run test:e2e     # End-to-end tests
@@ -138,16 +146,16 @@ platform/
 
 ### Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes* | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes* | Supabase anon key |
-| `OPENAI_API_KEY` | Yes* | OpenAI API key |
-| `NEXT_PUBLIC_APP_URL` | No | App URL (default: localhost:3000) |
-| `SENTRY_DSN` | No | Error monitoring |
-| `NEXT_PUBLIC_GA_ID` | No | Google Analytics |
+| Variable                        | Required | Description                       |
+| ------------------------------- | -------- | --------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Yes\*    | Supabase project URL              |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes\*    | Supabase anon key                 |
+| `OPENAI_API_KEY`                | Yes\*    | OpenAI API key                    |
+| `NEXT_PUBLIC_APP_URL`           | No       | App URL (default: localhost:3000) |
+| `SENTRY_DSN`                    | No       | Error monitoring                  |
+| `NEXT_PUBLIC_GA_ID`             | No       | Google Analytics                  |
 
-*\*Required for full functionality. App works in demo mode without these.*
+_\*Required for full functionality. App works in demo mode without these._
 
 ### Feature Flags
 
@@ -163,6 +171,7 @@ NEXT_PUBLIC_ENABLE_SOCIAL_FEATURES=true
 ## 🚀 Deployment
 
 ### Vercel (Recommended)
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -174,8 +183,9 @@ vercel --prod
 ```
 
 ### Netlify
+
 ```bash
-# Install Netlify CLI  
+# Install Netlify CLI
 npm i -g netlify-cli
 
 # Build and deploy
@@ -184,6 +194,7 @@ netlify deploy --prod --dir=.next
 ```
 
 ### Docker
+
 ```bash
 # Build image
 docker build -t fitforge-ai .
@@ -195,7 +206,7 @@ docker run -p 3000:3000 fitforge-ai
 ## 📖 Documentation
 
 - [📋 Production Deployment Guide](./PRODUCTION_CONFIG.md)
-- [✅ Production Readiness Checklist](./PRODUCTION_CHECKLIST.md)  
+- [✅ Production Readiness Checklist](./PRODUCTION_CHECKLIST.md)
 - [🚀 Quick Setup Guide](./SETUP.md)
 - [🔧 API Documentation](./docs/api.md)
 
@@ -204,7 +215,7 @@ docker run -p 3000:3000 fitforge-ai
 Comprehensive testing suite included:
 
 - **Unit Tests**: Component and utility testing
-- **Integration Tests**: API and database testing  
+- **Integration Tests**: API and database testing
 - **E2E Tests**: Full user journey testing
 - **Visual Tests**: UI component regression testing
 
@@ -251,4 +262,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ by the FitForge AI Team**
 
-*Transform your fitness journey with the power of AI* 💪
+_Transform your fitness journey with the power of AI_ 💪

@@ -1,8 +1,8 @@
 /**
  * Sentry configuration for FitForge AI
- * 
+ *
  * This file sets up error monitoring and performance tracking
- * for production environments. 
+ * for production environments.
  */
 
 import * as Sentry from '@sentry/nextjs';
@@ -19,16 +19,16 @@ export function initSentry() {
   Sentry.init({
     dsn: SENTRY_DSN,
     environment: ENVIRONMENT,
-    
+
     // Performance monitoring
     tracesSampleRate: ENVIRONMENT === 'production' ? 0.1 : 1.0,
-    
+
     // Session tracking
     autoSessionTracking: true,
-    
+
     // Release tracking
     release: process.env.VERCEL_GIT_COMMIT_SHA || 'development',
-    
+
     // Error filtering
     beforeSend(event, hint) {
       // Filter out development errors
@@ -38,20 +38,22 @@ export function initSentry() {
         console.log('Event:', event);
         console.groupEnd();
       }
-      
+
       // Don't send certain errors to production
       if (event.exception) {
         const error = event.exception.values?.[0];
-        if (error?.type === 'ChunkLoadError' || 
-            error?.value?.includes('Loading chunk') ||
-            error?.value?.includes('Network Error')) {
+        if (
+          error?.type === 'ChunkLoadError' ||
+          error?.value?.includes('Loading chunk') ||
+          error?.value?.includes('Network Error')
+        ) {
           return null; // Don't send chunk load errors
         }
       }
-      
+
       return event;
     },
-    
+
     // Performance filtering
     beforeSendTransaction(event) {
       // Don't track certain transactions in production
@@ -60,7 +62,7 @@ export function initSentry() {
       }
       return event;
     },
-    
+
     // Additional configuration for Next.js
     integrations: [
       new Sentry.BrowserTracing({
@@ -68,29 +70,29 @@ export function initSentry() {
         tracingOrigins: [
           'localhost',
           process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-          /^\/api\//
+          /^\/api\//,
         ],
       }),
     ],
-    
+
     // User context
     initialScope: {
       tags: {
         component: 'fitforge-ai',
-        platform: typeof window !== 'undefined' ? 'browser' : 'server'
-      }
-    }
+        platform: typeof window !== 'undefined' ? 'browser' : 'server',
+      },
+    },
   });
 
   // Set up global error handlers
   if (typeof window !== 'undefined') {
     // Browser-specific setup
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', event => {
       Sentry.captureException(event.reason);
     });
-    
+
     // Track user interactions
-    Sentry.addGlobalEventProcessor((event) => {
+    Sentry.addGlobalEventProcessor(event => {
       if (event.user && !event.user.id) {
         // Add anonymous user tracking
         event.user.id = 'anonymous';
@@ -105,24 +107,35 @@ export function captureError(error: Error, context?: Record<string, any>) {
   Sentry.captureException(error, {
     extra: context,
     tags: {
-      source: 'manual-capture'
-    }
+      source: 'manual-capture',
+    },
   });
 }
 
-export function captureMessage(message: string, level: 'info' | 'warning' | 'error' = 'info') {
+export function captureMessage(
+  message: string,
+  level: 'info' | 'warning' | 'error' = 'info'
+) {
   Sentry.captureMessage(message, level);
 }
 
-export function setUserContext(user: { id: string; email?: string; [key: string]: any }) {
+export function setUserContext(user: {
+  id: string;
+  email?: string;
+  [key: string]: any;
+}) {
   Sentry.setUser(user);
 }
 
-export function addBreadcrumb(message: string, category: string, data?: Record<string, any>) {
+export function addBreadcrumb(
+  message: string,
+  category: string,
+  data?: Record<string, any>
+) {
   Sentry.addBreadcrumb({
     message,
     category,
     data,
-    level: 'info'
+    level: 'info',
   });
 }

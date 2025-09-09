@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import {
   Send,
   Bot,
   User,
@@ -24,13 +24,17 @@ import {
   Calendar,
   BookOpen,
   Settings,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 import { ChatMessage } from './chat-message';
 import { QuickActions } from './quick-actions';
 import { CoachSuggestions } from './coach-suggestions';
 import { sendChatMessage } from '@/lib/actions/fitness-actions';
-import { ChatMessage as ChatMessageType, ChatContext, MessageType } from '@/lib/types/fitness';
+import {
+  ChatMessage as ChatMessageType,
+  ChatContext,
+  MessageType,
+} from '@/lib/types/fitness';
 
 interface AIChatCoachProps {
   userId: string;
@@ -41,33 +45,39 @@ const QUICK_PROMPTS = [
   {
     icon: <Target className="w-4 h-4" />,
     text: "How's my progress?",
-    prompt: "Can you analyze my current progress and give me insights on how I'm doing with my fitness goals?"
+    prompt:
+      "Can you analyze my current progress and give me insights on how I'm doing with my fitness goals?",
   },
   {
     icon: <Zap className="w-4 h-4" />,
     text: "Modify today's workout",
-    prompt: "I'd like to modify today's workout. Can you suggest some alternatives based on my current fitness level?"
+    prompt:
+      "I'd like to modify today's workout. Can you suggest some alternatives based on my current fitness level?",
   },
   {
     icon: <Heart className="w-4 h-4" />,
-    text: "Feeling unmotivated",
-    prompt: "I'm feeling a bit unmotivated today. Can you give me some encouragement and tips to get back on track?"
+    text: 'Feeling unmotivated',
+    prompt:
+      "I'm feeling a bit unmotivated today. Can you give me some encouragement and tips to get back on track?",
   },
   {
     icon: <Calendar className="w-4 h-4" />,
-    text: "Plan next week",
-    prompt: "Help me plan next week's workouts and meals based on my current progress and goals."
+    text: 'Plan next week',
+    prompt:
+      "Help me plan next week's workouts and meals based on my current progress and goals.",
   },
   {
     icon: <BookOpen className="w-4 h-4" />,
-    text: "Nutrition advice",
-    prompt: "I need some nutrition advice. What should I focus on to support my current fitness goals?"
+    text: 'Nutrition advice',
+    prompt:
+      'I need some nutrition advice. What should I focus on to support my current fitness goals?',
   },
   {
     icon: <TrendingUp className="w-4 h-4" />,
-    text: "Form tips",
-    prompt: "Can you give me some tips on proper form and technique for my current exercises?"
-  }
+    text: 'Form tips',
+    prompt:
+      'Can you give me some tips on proper form and technique for my current exercises?',
+  },
 ];
 
 export function AIChatCoach({ userId, context }: AIChatCoachProps) {
@@ -82,25 +92,26 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
   useEffect(() => {
     // Load chat history
     loadChatHistory();
-    
+
     // Welcome message
     if (messages.length === 0) {
       const welcomeMessage: ChatMessageType = {
         id: 'welcome',
         user_id: userId,
         message_type: MessageType.ASSISTANT,
-        content: "👋 Hi there! I'm your AI fitness coach. I'm here to help you with workouts, nutrition, motivation, and tracking your progress. What would you like to work on today?",
-        created_at: new Date().toISOString()
+        content:
+          "👋 Hi there! I'm your AI fitness coach. I'm here to help you with workouts, nutrition, motivation, and tracking your progress. What would you like to work on today?",
+        created_at: new Date().toISOString(),
       };
       setMessages([welcomeMessage]);
     }
-  }, [userId]);
+  }, [userId, messages.length, loadChatHistory]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const loadChatHistory = async () => {
+  const loadChatHistory = useCallback(async () => {
     try {
       // TODO: Replace with actual API call
       // const history = await getChatHistory(userId);
@@ -108,7 +119,7 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
     } catch (error) {
       console.error('Failed to load chat history:', error);
     }
-  };
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -123,7 +134,7 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
       user_id: userId,
       message_type: MessageType.USER,
       content: messageText,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -143,7 +154,7 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
           user_id: userId,
           message_type: MessageType.ASSISTANT,
           content: result.response,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         };
         setMessages(prev => [...prev, assistantMessage]);
       } else {
@@ -155,8 +166,9 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
         id: (Date.now() + 1).toString(),
         user_id: userId,
         message_type: MessageType.ASSISTANT,
-        content: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
-        created_at: new Date().toISOString()
+        content:
+          "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        created_at: new Date().toISOString(),
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
@@ -172,14 +184,19 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
   };
 
   const handleVoiceInput = () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    if (
+      !('webkitSpeechRecognition' in window) &&
+      !('SpeechRecognition' in window)
+    ) {
       alert('Speech recognition is not supported in your browser');
       return;
     }
 
-    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition;
     const recognition = new SpeechRecognition();
-    
+
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = 'en-US';
@@ -242,7 +259,11 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
           </div>
         </CardHeader>
 
-        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="flex-1 flex flex-col">
+        <Tabs
+          value={selectedTab}
+          onValueChange={setSelectedTab}
+          className="flex-1 flex flex-col"
+        >
           <div className="px-6">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="chat">
@@ -264,7 +285,7 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto space-y-4 py-4">
               <AnimatePresence>
-                {messages.map((message) => (
+                {messages.map(message => (
                   <ChatMessage
                     key={message.id}
                     message={message}
@@ -278,7 +299,7 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
                       user_id: userId,
                       message_type: MessageType.ASSISTANT,
                       content: '',
-                      created_at: new Date().toISOString()
+                      created_at: new Date().toISOString(),
                     }}
                     isLoading={true}
                   />
@@ -290,7 +311,9 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
             {/* Quick Prompts */}
             {messages.length <= 1 && (
               <div className="mb-4">
-                <p className="text-sm text-muted-foreground mb-3">Quick questions to get started:</p>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Quick questions to get started:
+                </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {QUICK_PROMPTS.map((prompt, index) => (
                     <motion.button
@@ -319,7 +342,7 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
                   <Input
                     ref={inputRef}
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={e => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask me anything about fitness, nutrition, or your progress..."
                     disabled={isLoading}
@@ -357,7 +380,7 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
                   <Send className="w-4 h-4" />
                 </Button>
               </div>
-              
+
               {isListening && (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -391,7 +414,7 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
                   user_id: userId,
                   message_type: MessageType.ASSISTANT,
                   content: message,
-                  created_at: new Date().toISOString()
+                  created_at: new Date().toISOString(),
                 };
                 setMessages(prev => [...prev, assistantMessage]);
                 setSelectedTab('chat');

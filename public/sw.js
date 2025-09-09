@@ -23,12 +23,13 @@ const CACHEABLE_ROUTES = [
 ];
 
 // Install event - cache static assets
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   console.log('Service Worker: Installing...');
-  
+
   event.waitUntil(
-    caches.open(STATIC_CACHE_NAME)
-      .then((cache) => {
+    caches
+      .open(STATIC_CACHE_NAME)
+      .then(cache => {
         console.log('Service Worker: Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       })
@@ -36,24 +37,27 @@ self.addEventListener('install', (event) => {
         console.log('Service Worker: Installation complete');
         return self.skipWaiting();
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Service Worker: Installation failed', error);
       })
   );
 });
 
 // Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
   console.log('Service Worker: Activating...');
-  
+
   event.waitUntil(
-    caches.keys()
-      .then((cacheNames) => {
+    caches
+      .keys()
+      .then(cacheNames => {
         return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE_NAME && 
-                cacheName !== DYNAMIC_CACHE_NAME &&
-                cacheName !== CACHE_NAME) {
+          cacheNames.map(cacheName => {
+            if (
+              cacheName !== STATIC_CACHE_NAME &&
+              cacheName !== DYNAMIC_CACHE_NAME &&
+              cacheName !== CACHE_NAME
+            ) {
               console.log('Service Worker: Deleting old cache', cacheName);
               return caches.delete(cacheName);
             }
@@ -68,7 +72,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch event - implement caching strategies
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -89,13 +93,15 @@ self.addEventListener('fetch', (event) => {
   } else if (url.pathname.startsWith('/api/')) {
     // API requests - network first with fallback
     event.respondWith(networkFirstWithFallback(request));
-  } else if (url.pathname.startsWith('/icons/') || 
-             url.pathname.startsWith('/images/') ||
-             url.pathname.endsWith('.png') ||
-             url.pathname.endsWith('.jpg') ||
-             url.pathname.endsWith('.jpeg') ||
-             url.pathname.endsWith('.svg') ||
-             url.pathname.endsWith('.webp')) {
+  } else if (
+    url.pathname.startsWith('/icons/') ||
+    url.pathname.startsWith('/images/') ||
+    url.pathname.endsWith('.png') ||
+    url.pathname.endsWith('.jpg') ||
+    url.pathname.endsWith('.jpeg') ||
+    url.pathname.endsWith('.svg') ||
+    url.pathname.endsWith('.webp')
+  ) {
     // Images - cache first
     event.respondWith(cacheFirst(request));
   } else {
@@ -128,7 +134,7 @@ async function cacheFirst(request) {
 async function networkFirstWithFallback(request) {
   try {
     const networkResponse = await fetch(request);
-    
+
     if (networkResponse.ok) {
       // Cache successful API responses
       if (CACHEABLE_ROUTES.some(route => request.url.includes(route))) {
@@ -137,34 +143,40 @@ async function networkFirstWithFallback(request) {
       }
       return networkResponse;
     }
-    
+
     // If network response is not ok, try cache
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
       return cachedResponse;
     }
-    
-    return new Response(JSON.stringify({ 
-      error: 'Network error and no cached data available',
-      offline: true 
-    }), {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' }
-    });
+
+    return new Response(
+      JSON.stringify({
+        error: 'Network error and no cached data available',
+        offline: true,
+      }),
+      {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error) {
     // Network failed, try cache
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
       return cachedResponse;
     }
-    
-    return new Response(JSON.stringify({ 
-      error: 'Service unavailable',
-      offline: true 
-    }), {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' }
-    });
+
+    return new Response(
+      JSON.stringify({
+        error: 'Service unavailable',
+        offline: true,
+      }),
+      {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 }
 
@@ -172,20 +184,20 @@ async function networkFirstWithFallback(request) {
 async function networkFirstWithOfflineFallback(request) {
   try {
     const networkResponse = await fetch(request);
-    
+
     if (networkResponse.ok) {
       // Cache successful page responses
       const cache = await caches.open(DYNAMIC_CACHE_NAME);
       cache.put(request, networkResponse.clone());
       return networkResponse;
     }
-    
+
     // If network response is not ok, try cache
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     // Return offline page
     return caches.match('/offline');
   } catch (error) {
@@ -194,19 +206,22 @@ async function networkFirstWithOfflineFallback(request) {
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     // Return offline page
-    return caches.match('/offline') || new Response('Page not available offline', {
-      status: 404,
-      headers: { 'Content-Type': 'text/html' }
-    });
+    return (
+      caches.match('/offline') ||
+      new Response('Page not available offline', {
+        status: 404,
+        headers: { 'Content-Type': 'text/html' },
+      })
+    );
   }
 }
 
 // Background sync for workout data
-self.addEventListener('sync', (event) => {
+self.addEventListener('sync', event => {
   console.log('Service Worker: Background sync triggered', event.tag);
-  
+
   if (event.tag === 'workout-sync') {
     event.waitUntil(syncWorkoutData());
   } else if (event.tag === 'progress-sync') {
@@ -215,9 +230,9 @@ self.addEventListener('sync', (event) => {
 });
 
 // Push notification handler
-self.addEventListener('push', (event) => {
+self.addEventListener('push', event => {
   console.log('Service Worker: Push notification received');
-  
+
   const options = {
     body: 'Time for your workout! Your AI coach is ready.',
     icon: '/icons/icon-192x192.png',
@@ -225,22 +240,22 @@ self.addEventListener('push', (event) => {
     vibrate: [200, 100, 200],
     data: {
       url: '/dashboard',
-      timestamp: Date.now()
+      timestamp: Date.now(),
     },
     actions: [
       {
         action: 'start-workout',
         title: 'Start Workout',
-        icon: '/icons/action-workout.png'
+        icon: '/icons/action-workout.png',
       },
       {
         action: 'view-dashboard',
         title: 'View Dashboard',
-        icon: '/icons/action-dashboard.png'
-      }
+        icon: '/icons/action-dashboard.png',
+      },
     ],
     requireInteraction: true,
-    tag: 'workout-reminder'
+    tag: 'workout-reminder',
   };
 
   if (event.data) {
@@ -253,19 +268,17 @@ self.addEventListener('push', (event) => {
     }
   }
 
-  event.waitUntil(
-    self.registration.showNotification('FitForge AI', options)
-  );
+  event.waitUntil(self.registration.showNotification('FitForge AI', options));
 });
 
 // Notification click handler
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener('notificationclick', event => {
   console.log('Service Worker: Notification clicked', event.action);
-  
+
   event.notification.close();
 
   let url = '/dashboard';
-  
+
   if (event.action === 'start-workout') {
     url = '/workout/start';
   } else if (event.action === 'view-dashboard') {
@@ -275,15 +288,16 @@ self.addEventListener('notificationclick', (event) => {
   }
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then((clientList) => {
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then(clientList => {
         // Check if app is already open
         for (const client of clientList) {
           if (client.url.includes(url) && 'focus' in client) {
             return client.focus();
           }
         }
-        
+
         // Open new window/tab
         if (clients.openWindow) {
           return clients.openWindow(url);
@@ -296,17 +310,17 @@ self.addEventListener('notificationclick', (event) => {
 async function syncWorkoutData() {
   try {
     console.log('Service Worker: Syncing workout data');
-    
+
     // Get pending workout data from IndexedDB or localStorage
     // This would be implemented based on your offline storage strategy
-    
+
     // Send data to server
     // const response = await fetch('/api/sync/workouts', {
     //   method: 'POST',
     //   headers: { 'Content-Type': 'application/json' },
     //   body: JSON.stringify(pendingData)
     // });
-    
+
     console.log('Service Worker: Workout data sync complete');
   } catch (error) {
     console.error('Service Worker: Workout sync failed', error);
@@ -318,9 +332,9 @@ async function syncWorkoutData() {
 async function syncProgressData() {
   try {
     console.log('Service Worker: Syncing progress data');
-    
+
     // Similar implementation to workout sync
-    
+
     console.log('Service Worker: Progress data sync complete');
   } catch (error) {
     console.error('Service Worker: Progress sync failed', error);
@@ -329,9 +343,9 @@ async function syncProgressData() {
 }
 
 // Periodic background sync (if supported)
-self.addEventListener('periodicsync', (event) => {
+self.addEventListener('periodicsync', event => {
   console.log('Service Worker: Periodic sync triggered', event.tag);
-  
+
   if (event.tag === 'daily-motivation') {
     event.waitUntil(sendDailyMotivation());
   }
@@ -343,17 +357,20 @@ async function sendDailyMotivation() {
     'Time to crush your fitness goals today!',
     'Your AI coach believes in you!',
     'Every workout counts towards your transformation!',
-    'Strong body, strong mind. Let\'s do this!',
-    'Progress, not perfection. You\'ve got this!'
+    "Strong body, strong mind. Let's do this!",
+    "Progress, not perfection. You've got this!",
   ];
-  
-  const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
-  
+
+  const randomMessage =
+    motivationalMessages[
+      Math.floor(Math.random() * motivationalMessages.length)
+    ];
+
   await self.registration.showNotification('Daily Motivation', {
     body: randomMessage,
     icon: '/icons/icon-192x192.png',
     badge: '/icons/badge-72x72.png',
     tag: 'daily-motivation',
-    data: { url: '/dashboard' }
+    data: { url: '/dashboard' },
   });
 }

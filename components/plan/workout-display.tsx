@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { 
+import {
   Play,
   Pause,
   RotateCcw,
@@ -20,7 +20,7 @@ import {
   SkipForward,
   Info,
   Video,
-  Timer
+  Timer,
 } from 'lucide-react';
 import type { DisplayWorkout, DisplayExercise } from '@/lib/types/fitness';
 
@@ -39,7 +39,13 @@ interface ExerciseCardProps {
   onStart: () => void;
 }
 
-function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: ExerciseCardProps) {
+function ExerciseCard({
+  exercise,
+  isActive,
+  isCompleted,
+  onComplete,
+  onStart,
+}: ExerciseCardProps) {
   const [currentSet, setCurrentSet] = useState(0);
   const [restTimer, setRestTimer] = useState(0);
   const [isResting, setIsResting] = useState(false);
@@ -55,10 +61,15 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
   };
 
   return (
-    <Card className={`transition-all ${
-      isActive ? 'border-primary bg-primary/5 shadow-lg' : 
-      isCompleted ? 'border-green-200 bg-green-50/50' : ''
-    }`}>
+    <Card
+      className={`transition-all ${
+        isActive
+          ? 'border-primary bg-primary/5 shadow-lg'
+          : isCompleted
+            ? 'border-green-200 bg-green-50/50'
+            : ''
+      }`}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -72,16 +83,18 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
               )}
               <CardTitle className="text-lg">{exercise.name}</CardTitle>
             </div>
-            
+
             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               <span>{exercise.sets} sets</span>
               <span>
-                {exercise.reps ? `${exercise.reps} reps` : `${exercise.duration_seconds}s`}
+                {exercise.reps
+                  ? `${exercise.reps} reps`
+                  : `${exercise.duration_seconds}s`}
               </span>
               <span>{exercise.rest_seconds}s rest</span>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Badge variant="secondary" className="text-xs">
               {exercise.equipment || 'Bodyweight'}
@@ -92,7 +105,7 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         {exercise.instructions && (
           <div className="mb-4 p-3 bg-muted/30 rounded-lg">
@@ -105,7 +118,7 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
             </p>
           </div>
         )}
-        
+
         {isActive && (
           <div className="space-y-4">
             {/* Current Set Display */}
@@ -114,10 +127,12 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
                 Set {currentSet + 1} of {exercise.sets}
               </div>
               <div className="text-lg">
-                {exercise.reps ? `${exercise.reps} reps` : `${exercise.duration_seconds} seconds`}
+                {exercise.reps
+                  ? `${exercise.reps} reps`
+                  : `${exercise.duration_seconds} seconds`}
               </div>
             </div>
-            
+
             {/* Rest Timer */}
             {isResting && (
               <div className="text-center p-4 bg-orange-50 rounded-lg">
@@ -126,10 +141,11 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
                   <span className="font-medium">Rest Period</span>
                 </div>
                 <div className="text-3xl font-bold text-orange-600 mb-2">
-                  {Math.floor(restTimer / 60)}:{(restTimer % 60).toString().padStart(2, '0')}
+                  {Math.floor(restTimer / 60)}:
+                  {(restTimer % 60).toString().padStart(2, '0')}
                 </div>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => {
                     setIsResting(false);
@@ -140,15 +156,13 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
                 </Button>
               </div>
             )}
-            
+
             {/* Exercise Controls */}
             <div className="flex justify-center space-x-2">
               {!isResting && (
-                <Button onClick={handleSetComplete}>
-                  Complete Set
-                </Button>
+                <Button onClick={handleSetComplete}>Complete Set</Button>
               )}
-              
+
               {exercise.demo_url && (
                 <Button variant="outline" size="sm">
                   <Video className="w-4 h-4 mr-2" />
@@ -158,7 +172,7 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
             </div>
           </div>
         )}
-        
+
         {!isActive && !isCompleted && (
           <div className="text-center">
             <Button variant="outline" onClick={onStart}>
@@ -166,7 +180,7 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
             </Button>
           </div>
         )}
-        
+
         {isCompleted && (
           <div className="text-center text-green-600 font-medium">
             ✓ Exercise Completed
@@ -177,18 +191,27 @@ function ExerciseCard({ exercise, isActive, isCompleted, onComplete, onStart }: 
   );
 }
 
-export function WorkoutDisplay({ workout, onComplete, onStart, isActive }: WorkoutDisplayProps) {
+export function WorkoutDisplay({
+  workout,
+  onComplete,
+  onStart,
+  isActive,
+}: WorkoutDisplayProps) {
   const [currentExercise, setCurrentExercise] = useState(0);
-  const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
+  const [completedExercises, setCompletedExercises] = useState<Set<number>>(
+    new Set()
+  );
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutTime, setWorkoutTime] = useState(0);
 
-  const completionPercentage = (completedExercises.size / workout.exercises.length) * 100;
-  const isWorkoutComplete = completedExercises.size === workout.exercises.length;
+  const completionPercentage =
+    (completedExercises.size / workout.exercises.length) * 100;
+  const isWorkoutComplete =
+    completedExercises.size === workout.exercises.length;
 
   const handleExerciseComplete = (exerciseIndex: number) => {
     setCompletedExercises(prev => new Set([...prev, exerciseIndex]));
-    
+
     if (exerciseIndex === workout.exercises.length - 1) {
       // Workout complete
       onComplete?.();
@@ -210,7 +233,9 @@ export function WorkoutDisplay({ workout, onComplete, onStart, isActive }: Worko
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl font-bold">{workout.name}</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                {workout.name}
+              </CardTitle>
               <p className="text-muted-foreground mt-1">
                 {workout.type} • {workout.difficulty}
               </p>
@@ -222,7 +247,7 @@ export function WorkoutDisplay({ workout, onComplete, onStart, isActive }: Worko
               <div className="text-sm text-muted-foreground">Complete</div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
             <div className="flex items-center space-x-2">
               <Target className="w-5 h-5 text-primary" />
@@ -234,21 +259,27 @@ export function WorkoutDisplay({ workout, onComplete, onStart, isActive }: Worko
             <div className="flex items-center space-x-2">
               <Clock className="w-5 h-5 text-blue-600" />
               <div>
-                <div className="font-semibold">{workout.estimated_duration} min</div>
+                <div className="font-semibold">
+                  {workout.estimated_duration} min
+                </div>
                 <div className="text-sm text-muted-foreground">Duration</div>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <Flame className="w-5 h-5 text-orange-600" />
               <div>
-                <div className="font-semibold">{workout.estimated_calories}</div>
+                <div className="font-semibold">
+                  {workout.estimated_calories}
+                </div>
                 <div className="text-sm text-muted-foreground">Calories</div>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <TrendingUp className="w-5 h-5 text-green-600" />
               <div>
-                <div className="font-semibold">{workout.target_muscle_groups.join(', ')}</div>
+                <div className="font-semibold">
+                  {workout.target_muscle_groups.join(', ')}
+                </div>
                 <div className="text-sm text-muted-foreground">Target</div>
               </div>
             </div>
@@ -266,7 +297,7 @@ export function WorkoutDisplay({ workout, onComplete, onStart, isActive }: Worko
             </span>
           </div>
           <Progress value={completionPercentage} className="h-3 mb-4" />
-          
+
           {!workoutStarted && !isWorkoutComplete && (
             <div className="text-center">
               <Button onClick={handleWorkoutStart} size="lg">
@@ -275,7 +306,7 @@ export function WorkoutDisplay({ workout, onComplete, onStart, isActive }: Worko
               </Button>
             </div>
           )}
-          
+
           {isWorkoutComplete && (
             <div className="text-center">
               <div className="text-lg font-semibold text-green-600 mb-2">
@@ -284,9 +315,7 @@ export function WorkoutDisplay({ workout, onComplete, onStart, isActive }: Worko
               <div className="text-sm text-muted-foreground mb-4">
                 Great job! You've completed all exercises.
               </div>
-              <Button onClick={onComplete}>
-                Finish Workout
-              </Button>
+              <Button onClick={onComplete}>Finish Workout</Button>
             </div>
           )}
         </CardContent>
@@ -308,7 +337,7 @@ export function WorkoutDisplay({ workout, onComplete, onStart, isActive }: Worko
       {/* Exercise List */}
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">Exercises</h3>
-        
+
         {workout.exercises.map((exercise, index) => (
           <motion.div
             key={exercise.id}
@@ -343,7 +372,8 @@ export function WorkoutDisplay({ workout, onComplete, onStart, isActive }: Worko
               </div>
               <div className="text-center p-3 bg-blue-50 rounded-lg">
                 <div className="font-semibold text-blue-600">
-                  {Math.floor(workoutTime / 60)}:{(workoutTime % 60).toString().padStart(2, '0')}
+                  {Math.floor(workoutTime / 60)}:
+                  {(workoutTime % 60).toString().padStart(2, '0')}
                 </div>
                 <div className="text-sm text-muted-foreground">Time</div>
               </div>

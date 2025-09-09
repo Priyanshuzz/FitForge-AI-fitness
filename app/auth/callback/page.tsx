@@ -11,7 +11,7 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       const supabase = createClient();
-      
+
       if (!supabase) {
         console.error('Supabase not configured');
         router.push('/auth/login?error=configuration');
@@ -20,7 +20,7 @@ export default function AuthCallback() {
 
       try {
         const { data, error } = await supabase.auth.getSession();
-        
+
         if (error) {
           console.error('Auth callback error:', error);
           router.push('/auth/login?error=callback');
@@ -47,8 +47,12 @@ export default function AuthCallback() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
       <div className="text-center">
         <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-        <h2 className="text-xl font-semibold mb-2">Completing authentication...</h2>
-        <p className="text-muted-foreground">Please wait while we redirect you.</p>
+        <h2 className="text-xl font-semibold mb-2">
+          Completing authentication...
+        </h2>
+        <p className="text-muted-foreground">
+          Please wait while we redirect you.
+        </p>
       </div>
     </div>
   );

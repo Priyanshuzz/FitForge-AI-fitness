@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { 
+import {
   Calendar,
   Clock,
   Target,
@@ -18,7 +18,7 @@ import {
   CheckCircle2,
   Circle,
   Star,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
 } from 'lucide-react';
 import type { DisplayPlan } from '@/lib/types/fitness';
 
@@ -28,20 +28,38 @@ interface PlanOverviewProps {
   onStartWorkout?: (workoutId: string) => void;
 }
 
-const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAYS_OF_WEEK = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
 
-export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewProps) {
+export function PlanOverview({
+  plan,
+  onViewDay,
+  onStartWorkout,
+}: PlanOverviewProps) {
   const [selectedWeek, setSelectedWeek] = useState(0);
-  
+
   const currentWeek = plan.weeks[selectedWeek];
-  const completedDays = currentWeek?.days.filter(day => day.completed).length || 0;
+  const completedDays =
+    currentWeek?.days.filter(day => day.completed).length || 0;
   const totalDays = currentWeek?.days.length || 0;
   const weekProgress = totalDays > 0 ? (completedDays / totalDays) * 100 : 0;
 
-  const totalWorkouts = plan.weeks.reduce((total, week) => 
-    total + week.days.filter(day => day.workout).length, 0);
-  const completedWorkouts = plan.weeks.reduce((total, week) => 
-    total + week.days.filter(day => day.workout && day.completed).length, 0);
+  const totalWorkouts = plan.weeks.reduce(
+    (total, week) => total + week.days.filter(day => day.workout).length,
+    0
+  );
+  const completedWorkouts = plan.weeks.reduce(
+    (total, week) =>
+      total + week.days.filter(day => day.workout && day.completed).length,
+    0
+  );
 
   return (
     <div className="space-y-6">
@@ -50,7 +68,9 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl font-bold">Your Personalized Plan</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                Your Personalized Plan
+              </CardTitle>
               <p className="text-muted-foreground mt-1">
                 AI-crafted for your {plan.goal} journey
               </p>
@@ -62,18 +82,24 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
               </Badge>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{plan.weeks.length}</div>
+              <div className="text-2xl font-bold text-primary">
+                {plan.weeks.length}
+              </div>
               <div className="text-sm text-muted-foreground">Weeks</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-secondary">{totalWorkouts}</div>
+              <div className="text-2xl font-bold text-secondary">
+                {totalWorkouts}
+              </div>
               <div className="text-sm text-muted-foreground">Workouts</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{completedWorkouts}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {completedWorkouts}
+              </div>
               <div className="text-sm text-muted-foreground">Completed</div>
             </div>
             <div className="text-center">
@@ -93,7 +119,7 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
           {plan.weeks.map((_, index) => (
             <Button
               key={index}
-              variant={selectedWeek === index ? "default" : "outline"}
+              variant={selectedWeek === index ? 'default' : 'outline'}
               size="sm"
               onClick={() => setSelectedWeek(index)}
             >
@@ -122,7 +148,7 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
           <TabsTrigger value="schedule">Weekly Schedule</TabsTrigger>
           <TabsTrigger value="nutrition">Nutrition Plan</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="schedule" className="space-y-4">
           <div className="grid gap-4">
             {currentWeek?.days.map((day, dayIndex) => (
@@ -132,9 +158,11 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: dayIndex * 0.1 }}
               >
-                <Card className={`cursor-pointer transition-all hover:shadow-md ${
-                  day.completed ? 'border-green-200 bg-green-50/50' : ''
-                }`}>
+                <Card
+                  className={`cursor-pointer transition-all hover:shadow-md ${
+                    day.completed ? 'border-green-200 bg-green-50/50' : ''
+                  }`}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
@@ -153,7 +181,7 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
                             </p>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-4">
                           {day.workout && (
                             <div className="flex items-center space-x-1 text-primary">
@@ -163,7 +191,7 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
                               </span>
                             </div>
                           )}
-                          
+
                           {day.is_rest_day && (
                             <Badge variant="secondary" className="text-xs">
                               Rest Day
@@ -171,7 +199,7 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center space-x-2">
                         {day.workout && (
                           <div className="text-right text-sm text-muted-foreground">
@@ -185,7 +213,7 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
                             </div>
                           </div>
                         )}
-                        
+
                         <Button
                           variant="outline"
                           size="sm"
@@ -193,7 +221,7 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
                         >
                           View Details
                         </Button>
-                        
+
                         {day.workout && !day.completed && (
                           <Button
                             size="sm"
@@ -204,13 +232,15 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
                         )}
                       </div>
                     </div>
-                    
+
                     {day.workout && (
                       <div className="mt-3 pt-3 border-t">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div className="flex items-center">
                             <Target className="w-4 h-4 mr-2 text-primary" />
-                            <span>{day.workout.target_muscle_groups.join(', ')}</span>
+                            <span>
+                              {day.workout.target_muscle_groups.join(', ')}
+                            </span>
                           </div>
                           <div className="flex items-center">
                             <TrendingUp className="w-4 h-4 mr-2 text-green-600" />
@@ -233,7 +263,7 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
             ))}
           </div>
         </TabsContent>
-        
+
         <TabsContent value="nutrition" className="space-y-4">
           <Card>
             <CardHeader>
@@ -248,7 +278,9 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
                   <div className="text-2xl font-bold text-primary">
                     {currentWeek?.nutrition_targets?.daily_calories || 2000}
                   </div>
-                  <div className="text-sm text-muted-foreground">Daily Calories</div>
+                  <div className="text-sm text-muted-foreground">
+                    Daily Calories
+                  </div>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">
@@ -269,13 +301,14 @@ export function PlanOverview({ plan, onViewDay, onStartWorkout }: PlanOverviewPr
                   <div className="text-sm text-muted-foreground">Fats</div>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 {currentWeek?.days.map((day, dayIndex) => (
-                  <div key={dayIndex} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                    <div className="font-medium">
-                      {DAYS_OF_WEEK[dayIndex]}
-                    </div>
+                  <div
+                    key={dayIndex}
+                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                  >
+                    <div className="font-medium">{DAYS_OF_WEEK[dayIndex]}</div>
                     <div className="text-sm text-muted-foreground">
                       {day.meals?.length || 0} meals planned
                     </div>

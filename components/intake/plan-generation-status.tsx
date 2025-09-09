@@ -5,15 +5,15 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Loader2, 
-  CheckCircle2, 
-  XCircle, 
-  Brain, 
-  Dumbbell, 
+import {
+  Loader2,
+  CheckCircle2,
+  XCircle,
+  Brain,
+  Dumbbell,
   Apple,
   Target,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 import { checkPlanGenerationStatus } from '@/lib/actions/fitness-actions';
 import { useRouter } from 'next/navigation';
@@ -30,34 +30,40 @@ const GENERATION_STEPS = [
     label: 'Analyzing Your Profile',
     description: 'Processing your goals, preferences, and health data',
     icon: Brain,
-    duration: 15000 // 15 seconds
+    duration: 15000, // 15 seconds
   },
   {
     id: 'workouts',
     label: 'Creating Your Workouts',
     description: 'Designing personalized exercises for your fitness level',
     icon: Dumbbell,
-    duration: 20000 // 20 seconds
+    duration: 20000, // 20 seconds
   },
   {
     id: 'nutrition',
     label: 'Planning Your Nutrition',
     description: 'Generating meal plans and calculating macros',
     icon: Apple,
-    duration: 15000 // 15 seconds
+    duration: 15000, // 15 seconds
   },
   {
     id: 'optimization',
     label: 'Optimizing Your Plan',
     description: 'Fine-tuning everything for maximum results',
     icon: Target,
-    duration: 10000 // 10 seconds
-  }
+    duration: 10000, // 10 seconds
+  },
 ];
 
-export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerationStatusProps) {
+export function PlanGenerationStatus({
+  jobId,
+  onComplete,
+  onError,
+}: PlanGenerationStatusProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [status, setStatus] = useState<'generating' | 'completed' | 'failed'>('generating');
+  const [status, setStatus] = useState<'generating' | 'completed' | 'failed'>(
+    'generating'
+  );
   const [progress, setProgress] = useState(0);
   const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState(60);
   const [planId, setPlanId] = useState<string | null>(null);
@@ -71,10 +77,10 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
     const checkStatus = async () => {
       try {
         const result = await checkPlanGenerationStatus(jobId);
-        
+
         if (result.success && result.job) {
           const job = result.job;
-          
+
           if (job.status === 'COMPLETED') {
             setStatus('completed');
             setProgress(100);
@@ -117,7 +123,7 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
         const newProgress = Math.min(prev + 1.67, 95); // Reach 95% in 60 seconds
         return newProgress;
       });
-      
+
       setEstimatedTimeRemaining(prev => Math.max(prev - 1, 0));
     }, 1000);
 
@@ -144,7 +150,7 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
           className="flex justify-center"
         >
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
@@ -153,9 +159,12 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
         </motion.div>
 
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-green-600">Your Plan is Ready! 🎉</h1>
+          <h1 className="text-3xl font-bold text-green-600">
+            Your Plan is Ready! 🎉
+          </h1>
           <p className="text-lg text-muted-foreground">
-            Your personalized fitness and nutrition plan has been created successfully.
+            Your personalized fitness and nutrition plan has been created
+            successfully.
           </p>
         </div>
 
@@ -190,8 +199,8 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
           </CardContent>
         </Card>
 
-        <Button 
-          size="lg" 
+        <Button
+          size="lg"
           onClick={handleViewPlan}
           className="w-full md:w-auto px-8"
         >
@@ -207,7 +216,7 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
           className="flex justify-center"
         >
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
@@ -216,31 +225,30 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
         </motion.div>
 
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-red-600">Oops! Something went wrong</h1>
+          <h1 className="text-3xl font-bold text-red-600">
+            Oops! Something went wrong
+          </h1>
           <p className="text-lg text-muted-foreground">
-            We encountered an issue while generating your plan. Please try again.
+            We encountered an issue while generating your plan. Please try
+            again.
           </p>
         </div>
 
         <Card className="bg-red-50 border-red-200">
           <CardContent className="p-6">
             <p className="text-sm text-red-800">
-              Don't worry - your information has been saved. You can try generating 
-              your plan again, or contact our support team if the issue persists.
+              Don't worry - your information has been saved. You can try
+              generating your plan again, or contact our support team if the
+              issue persists.
             </p>
           </CardContent>
         </Card>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button 
-            variant="outline" 
-            onClick={handleTryAgain}
-          >
+          <Button variant="outline" onClick={handleTryAgain}>
             Try Again
           </Button>
-          <Button>
-            Contact Support
-          </Button>
+          <Button>Contact Support</Button>
         </div>
       </div>
     );
@@ -252,17 +260,18 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
       <div className="text-center space-y-2">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
           className="flex justify-center"
         >
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
             <Brain className="w-8 h-8 text-primary" />
           </div>
         </motion.div>
-        
+
         <h1 className="text-3xl font-bold">Creating Your Perfect Plan</h1>
         <p className="text-lg text-muted-foreground">
-          Our AI is analyzing your profile and crafting a personalized fitness journey
+          Our AI is analyzing your profile and crafting a personalized fitness
+          journey
         </p>
       </div>
 
@@ -273,9 +282,9 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
             <span>Progress</span>
             <span>{Math.round(progress)}% Complete</span>
           </div>
-          
+
           <Progress value={progress} className="h-3" />
-          
+
           <div className="text-center text-sm text-muted-foreground">
             Estimated time remaining: {estimatedTimeRemaining} seconds
           </div>
@@ -290,36 +299,42 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
               const Icon = step.icon;
               const isActive = index === currentStep;
               const isCompleted = index < currentStep;
-              
+
               return (
                 <motion.div
                   key={step.id}
                   initial={{ opacity: 0.5 }}
-                  animate={{ 
+                  animate={{
                     opacity: isActive ? 1 : isCompleted ? 0.8 : 0.5,
-                    scale: isActive ? 1.02 : 1
+                    scale: isActive ? 1.02 : 1,
                   }}
                   className={`flex items-center space-x-4 p-3 rounded-lg transition-colors ${
-                    isActive 
-                      ? 'bg-primary/10 border border-primary/20' 
-                      : isCompleted 
+                    isActive
+                      ? 'bg-primary/10 border border-primary/20'
+                      : isCompleted
                         ? 'bg-green-50 border border-green-200'
                         : 'bg-muted/50'
                   }`}
                 >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    isCompleted 
-                      ? 'bg-green-100' 
-                      : isActive 
-                        ? 'bg-primary/20' 
-                        : 'bg-muted'
-                  }`}>
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      isCompleted
+                        ? 'bg-green-100'
+                        : isActive
+                          ? 'bg-primary/20'
+                          : 'bg-muted'
+                    }`}
+                  >
                     {isCompleted ? (
                       <CheckCircle2 className="w-5 h-5 text-green-600" />
                     ) : isActive ? (
                       <motion.div
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: 'linear',
+                        }}
                       >
                         <Loader2 className="w-5 h-5 text-primary" />
                       </motion.div>
@@ -327,11 +342,17 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
                       <Icon className="w-5 h-5 text-muted-foreground" />
                     )}
                   </div>
-                  
+
                   <div className="flex-1">
-                    <h3 className={`font-medium ${
-                      isActive ? 'text-primary' : isCompleted ? 'text-green-700' : 'text-muted-foreground'
-                    }`}>
+                    <h3
+                      className={`font-medium ${
+                        isActive
+                          ? 'text-primary'
+                          : isCompleted
+                            ? 'text-green-700'
+                            : 'text-muted-foreground'
+                      }`}
+                    >
                       {step.label}
                     </h3>
                     <p className="text-sm text-muted-foreground">
@@ -354,16 +375,17 @@ export function PlanGenerationStatus({ jobId, onComplete, onError }: PlanGenerat
           </h3>
           <div className="text-sm space-y-2">
             <p>
-              💪 Your personalized plan considers over 50 different factors including your 
-              goals, equipment, schedule, and dietary preferences.
+              💪 Your personalized plan considers over 50 different factors
+              including your goals, equipment, schedule, and dietary
+              preferences.
             </p>
             <p>
-              🧠 Our AI processes millions of exercise combinations to find the perfect 
-              workouts for your fitness level and available time.
+              🧠 Our AI processes millions of exercise combinations to find the
+              perfect workouts for your fitness level and available time.
             </p>
             <p>
-              🍎 Your meal plans are optimized for your caloric needs while ensuring 
-              balanced nutrition and foods you'll actually enjoy.
+              🍎 Your meal plans are optimized for your caloric needs while
+              ensuring balanced nutrition and foods you'll actually enjoy.
             </p>
           </div>
         </CardContent>

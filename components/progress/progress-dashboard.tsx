@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   TrendingUp,
   TrendingDown,
   Target,
@@ -19,7 +19,7 @@ import {
   Award,
   Flame,
   Clock,
-  Zap
+  Zap,
 } from 'lucide-react';
 import { WeightChart } from './weight-chart';
 import { BodyMeasurementsChart } from './body-measurements-chart';
@@ -27,7 +27,11 @@ import { WorkoutProgressChart } from './workout-progress-chart';
 import { NutritionChart } from './nutrition-chart';
 import { ProgressPhotos } from './progress-photos';
 import { AchievementsBadges } from './achievements-badges';
-import { ProgressEntry, UserAnalytics, TrainingStyle } from '@/lib/types/fitness';
+import {
+  ProgressEntry,
+  UserAnalytics,
+  TrainingStyle,
+} from '@/lib/types/fitness';
 
 interface ProgressDashboardProps {
   userId: string;
@@ -35,7 +39,11 @@ interface ProgressDashboardProps {
   onTakePhoto?: () => void;
 }
 
-export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressDashboardProps) {
+export function ProgressDashboard({
+  userId,
+  onAddEntry,
+  onTakePhoto,
+}: ProgressDashboardProps) {
   const [selectedTab, setSelectedTab] = useState('overview');
   const [progressEntries, setProgressEntries] = useState<ProgressEntry[]>([]);
   const [analytics, setAnalytics] = useState<UserAnalytics | null>(null);
@@ -43,9 +51,9 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
 
   useEffect(() => {
     loadProgressData();
-  }, [userId]);
+  }, [userId, loadProgressData]);
 
-  const loadProgressData = async () => {
+  const loadProgressData = useCallback(async () => {
     try {
       setLoading(true);
       // TODO: Replace with actual API calls
@@ -53,7 +61,7 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
       //   getProgressEntries(userId),
       //   getUserAnalytics(userId)
       // ]);
-      
+
       // Mock data for demonstration
       const mockEntries: ProgressEntry[] = [
         {
@@ -67,7 +75,7 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
           mood_rating: 4,
           energy_level: 3,
           notes: 'Starting my fitness journey!',
-          created_at: '2024-01-01T10:00:00Z'
+          created_at: '2024-01-01T10:00:00Z',
         },
         {
           id: '2',
@@ -80,7 +88,7 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
           mood_rating: 4,
           energy_level: 4,
           notes: 'Feeling stronger and more energetic!',
-          created_at: '2024-01-15T10:00:00Z'
+          created_at: '2024-01-15T10:00:00Z',
         },
         {
           id: '3',
@@ -93,8 +101,8 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
           mood_rating: 5,
           energy_level: 5,
           notes: 'Amazing progress! Love the new routine.',
-          created_at: '2024-02-01T10:00:00Z'
-        }
+          created_at: '2024-02-01T10:00:00Z',
+        },
       ];
 
       const mockAnalytics: UserAnalytics = {
@@ -105,7 +113,7 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
         plan_adherence_percentage: 87,
         favorite_workout_types: ['STRENGTH', 'CARDIO'] as any[],
         average_workout_rating: 4.3,
-        last_active_date: '2024-02-01'
+        last_active_date: '2024-02-01',
       };
 
       setProgressEntries(mockEntries);
@@ -115,11 +123,11 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
 
   const getLatestEntry = () => {
-    return progressEntries.length > 0 
-      ? progressEntries[progressEntries.length - 1] 
+    return progressEntries.length > 0
+      ? progressEntries[progressEntries.length - 1]
       : null;
   };
 
@@ -134,7 +142,7 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
     return (
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3, 4].map(i => (
             <Card key={i}>
               <CardContent className="p-6">
                 <div className="animate-pulse space-y-3">
@@ -190,10 +198,16 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
                 <div className="text-sm text-muted-foreground flex items-center">
                   Current Weight
                   {weightChange && (
-                    <span className={`ml-2 flex items-center ${
-                      weightChange < 0 ? 'text-green-600' : 'text-orange-600'
-                    }`}>
-                      {weightChange < 0 ? <TrendingDown className="w-3 h-3 mr-1" /> : <TrendingUp className="w-3 h-3 mr-1" />}
+                    <span
+                      className={`ml-2 flex items-center ${
+                        weightChange < 0 ? 'text-green-600' : 'text-orange-600'
+                      }`}
+                    >
+                      {weightChange < 0 ? (
+                        <TrendingDown className="w-3 h-3 mr-1" />
+                      ) : (
+                        <TrendingUp className="w-3 h-3 mr-1" />
+                      )}
                       {Math.abs(weightChange).toFixed(1)}kg
                     </span>
                   )}
@@ -272,31 +286,35 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {progressEntries.slice(-3).reverse().map((entry) => (
-                    <motion.div
-                      key={entry.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
-                    >
-                      <div>
-                        <div className="font-medium">
-                          {new Date(entry.entry_date).toLocaleDateString()}
+                  {progressEntries
+                    .slice(-3)
+                    .reverse()
+                    .map(entry => (
+                      <motion.div
+                        key={entry.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                      >
+                        <div>
+                          <div className="font-medium">
+                            {new Date(entry.entry_date).toLocaleDateString()}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {entry.weight_kg}kg • {entry.body_fat_percentage}%
+                            BF
+                          </div>
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          {entry.weight_kg}kg • {entry.body_fat_percentage}% BF
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="secondary">
+                            Mood: {entry.mood_rating}/5
+                          </Badge>
+                          <Badge variant="outline">
+                            Energy: {entry.energy_level}/5
+                          </Badge>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="secondary">
-                          Mood: {entry.mood_rating}/5
-                        </Badge>
-                        <Badge variant="outline">
-                          Energy: {entry.energy_level}/5
-                        </Badge>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -385,10 +403,7 @@ export function ProgressDashboard({ userId, onAddEntry, onTakePhoto }: ProgressD
         </TabsContent>
 
         <TabsContent value="photos" className="mt-6">
-          <ProgressPhotos 
-            userId={userId} 
-            onTakePhoto={onTakePhoto}
-          />
+          <ProgressPhotos userId={userId} onTakePhoto={onTakePhoto} />
         </TabsContent>
       </Tabs>
     </div>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
+import {
   Calendar,
   Play,
   CheckCircle2,
@@ -18,11 +18,14 @@ import {
   Dumbbell,
   Star,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { PlanOverview } from './plan-overview';
 import { DailyPlanView } from './daily-plan-view';
-import { getTodaysWorkout, getCurrentPlan } from '@/lib/actions/fitness-actions';
+import {
+  getTodaysWorkout,
+  getCurrentPlan,
+} from '@/lib/actions/fitness-actions';
 import type { DisplayPlan, DisplayWorkout, PlanDay } from '@/lib/types/fitness';
 
 interface PlanDashboardProps {
@@ -33,10 +36,16 @@ interface PlanDashboardProps {
 
 type ViewMode = 'dashboard' | 'plan-overview' | 'daily-view';
 
-export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDashboardProps) {
+export function PlanDashboard({
+  userId,
+  onStartWorkout,
+  onViewProgress,
+}: PlanDashboardProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const [currentPlan, setCurrentPlan] = useState<DisplayPlan | null>(null);
-  const [todaysWorkout, setTodaysWorkout] = useState<DisplayWorkout | null>(null);
+  const [todaysWorkout, setTodaysWorkout] = useState<DisplayWorkout | null>(
+    null
+  );
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +61,7 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
 
       const [planResult, workoutResult] = await Promise.all([
         getCurrentPlan(),
-        getTodaysWorkout()
+        getTodaysWorkout(),
       ]);
 
       if (planResult.success && planResult.plan) {
@@ -72,26 +81,28 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
 
   const getTodaysPlan = (): PlanDay | null => {
     if (!currentPlan) return null;
-    
+
     const today = new Date();
     const dayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1; // Convert Sunday=0 to Monday=0
-    const currentWeek = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000)) % currentPlan.weeks.length;
-    
+    const currentWeek =
+      Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000)) %
+      currentPlan.weeks.length;
+
     return currentPlan.weeks[currentWeek]?.days[dayIndex] || null;
   };
 
   const getWeekProgress = () => {
     if (!currentPlan) return { completed: 0, total: 0, percentage: 0 };
-    
+
     const currentWeekIndex = 0; // This should be calculated based on plan start date
     const currentWeek = currentPlan.weeks[currentWeekIndex];
-    
+
     if (!currentWeek) return { completed: 0, total: 0, percentage: 0 };
-    
+
     const completed = currentWeek.days.filter(day => day.completed).length;
     const total = currentWeek.days.length;
     const percentage = total > 0 ? (completed / total) * 100 : 0;
-    
+
     return { completed, total, percentage };
   };
 
@@ -108,7 +119,7 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
     return (
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3].map(i => (
             <Card key={i}>
               <CardContent className="p-6">
                 <div className="animate-pulse space-y-3">
@@ -128,9 +139,7 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
     return (
       <Card>
         <CardContent className="p-6 text-center">
-          <div className="text-muted-foreground mb-4">
-            {error}
-          </div>
+          <div className="text-muted-foreground mb-4">{error}</div>
           <Button onClick={loadPlanData}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Try Again
@@ -145,9 +154,10 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
       <Card>
         <CardContent className="p-6 text-center">
           <div className="text-muted-foreground mb-4">
-            No active fitness plan found. Complete your intake assessment to get started!
+            No active fitness plan found. Complete your intake assessment to get
+            started!
           </div>
-          <Button onClick={() => window.location.href = '/intake'}>
+          <Button onClick={() => (window.location.href = '/intake')}>
             Start Assessment
           </Button>
         </CardContent>
@@ -173,7 +183,9 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-sm text-muted-foreground">Week Progress</div>
+                <div className="text-sm text-muted-foreground">
+                  Week Progress
+                </div>
                 <div className="text-2xl font-bold text-primary">
                   {Math.round(weekProgress.percentage)}%
                 </div>
@@ -191,7 +203,9 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
                   <Calendar className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">{currentPlan.weeks.length}</div>
+                  <div className="text-2xl font-bold">
+                    {currentPlan.weeks.length}
+                  </div>
                   <div className="text-sm text-muted-foreground">Week Plan</div>
                 </div>
               </div>
@@ -205,7 +219,9 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
                   <CheckCircle2 className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">{weekProgress.completed}</div>
+                  <div className="text-2xl font-bold">
+                    {weekProgress.completed}
+                  </div>
                   <div className="text-sm text-muted-foreground">Completed</div>
                 </div>
               </div>
@@ -255,12 +271,15 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
               {todaysPlan?.workout ? (
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold">{todaysPlan.workout.name}</h3>
+                    <h3 className="text-lg font-semibold">
+                      {todaysPlan.workout.name}
+                    </h3>
                     <p className="text-sm text-muted-foreground">
-                      {todaysPlan.workout.type} • {todaysPlan.workout.difficulty}
+                      {todaysPlan.workout.type} •{' '}
+                      {todaysPlan.workout.difficulty}
                     </p>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="flex items-center">
                       <Clock className="w-4 h-4 mr-2 text-blue-600" />
@@ -272,16 +291,20 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
                     </div>
                     <div className="flex items-center">
                       <Target className="w-4 h-4 mr-2 text-green-600" />
-                      <span>{todaysPlan.workout.exercises.length} exercises</span>
+                      <span>
+                        {todaysPlan.workout.exercises.length} exercises
+                      </span>
                     </div>
                     <div className="flex items-center">
                       <TrendingUp className="w-4 h-4 mr-2 text-purple-600" />
-                      <span>{todaysPlan.workout.target_muscle_groups.join(', ')}</span>
+                      <span>
+                        {todaysPlan.workout.target_muscle_groups.join(', ')}
+                      </span>
                     </div>
                   </div>
-                  
+
                   <div className="flex space-x-2">
-                    <Button 
+                    <Button
                       className="flex-1"
                       onClick={() => handleStartWorkout(todaysPlan.workout!.id)}
                       disabled={todaysPlan.completed}
@@ -298,7 +321,7 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
                         </>
                       )}
                     </Button>
-                    <Button 
+                    <Button
                       variant="outline"
                       onClick={() => handleViewDay(0)} // Today's index
                     >
@@ -339,9 +362,14 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-3 bg-primary/5 rounded-lg">
                       <div className="text-lg font-bold text-primary">
-                        {todaysPlan.meals.reduce((sum, meal) => sum + meal.calories, 0)}
+                        {todaysPlan.meals.reduce(
+                          (sum, meal) => sum + meal.calories,
+                          0
+                        )}
                       </div>
-                      <div className="text-xs text-muted-foreground">Calories</div>
+                      <div className="text-xs text-muted-foreground">
+                        Calories
+                      </div>
                     </div>
                     <div className="text-center p-3 bg-green-50 rounded-lg">
                       <div className="text-lg font-bold text-green-600">
@@ -350,18 +378,23 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
                       <div className="text-xs text-muted-foreground">Meals</div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     {todaysPlan.meals.slice(0, 4).map((meal, index) => (
-                      <div key={meal.id} className="flex justify-between text-sm">
+                      <div
+                        key={meal.id}
+                        className="flex justify-between text-sm"
+                      >
                         <span className="capitalize">{meal.meal_type}</span>
-                        <span className="text-muted-foreground">{meal.calories} cal</span>
+                        <span className="text-muted-foreground">
+                          {meal.calories} cal
+                        </span>
                       </div>
                     ))}
                   </div>
-                  
-                  <Button 
-                    variant="outline" 
+
+                  <Button
+                    variant="outline"
                     className="w-full"
                     onClick={() => handleViewDay(0)}
                   >
@@ -388,23 +421,21 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Week 1 Progress</span>
                 <span className="text-sm text-muted-foreground">
-                  {weekProgress.completed} of {weekProgress.total} days completed
+                  {weekProgress.completed} of {weekProgress.total} days
+                  completed
                 </span>
               </div>
               <Progress value={weekProgress.percentage} className="h-2" />
-              
+
               <div className="flex justify-between">
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => setViewMode('plan-overview')}
                 >
                   View Full Plan
                 </Button>
-                
-                <Button 
-                  variant="outline"
-                  onClick={onViewProgress}
-                >
+
+                <Button variant="outline" onClick={onViewProgress}>
                   Track Progress
                 </Button>
               </div>
@@ -426,7 +457,7 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
           <h1 className="text-2xl font-bold">Your Fitness Plan</h1>
           <div></div>
         </div>
-        
+
         <PlanOverview
           plan={currentPlan}
           onViewDay={handleViewDay}
@@ -444,12 +475,12 @@ export function PlanDashboard({ userId, onStartWorkout, onViewProgress }: PlanDa
         dayIndex={selectedDayIndex}
         onBack={() => setViewMode('plan-overview')}
         onDayChange={setSelectedDayIndex}
-        onWorkoutComplete={(workoutId) => {
+        onWorkoutComplete={workoutId => {
           console.log('Workout completed:', workoutId);
           // Refresh plan data
           loadPlanData();
         }}
-        onMealComplete={(mealId) => {
+        onMealComplete={mealId => {
           console.log('Meal completed:', mealId);
         }}
       />

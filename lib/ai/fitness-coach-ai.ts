@@ -1,15 +1,15 @@
 import { openai } from '@ai-sdk/openai';
 import { generateObject, generateText } from 'ai';
 import { z } from 'zod';
-import type { 
-  IntakeForm, 
-  Plan, 
-  Workout, 
-  Meal, 
+import type {
+  IntakeForm,
+  Plan,
+  Workout,
+  Meal,
   CalorieCalculation,
   GroceryList,
   ChatMessage,
-  ChatContext
+  ChatContext,
 } from '../types/fitness';
 
 // AI Configuration
@@ -49,13 +49,19 @@ const calorieCalculationSchema = z.object({
   bmr: z.number().describe('Basal Metabolic Rate in calories'),
   tdee: z.number().describe('Total Daily Energy Expenditure'),
   daily_target: z.number().describe('Daily calorie target for user goal'),
-  deficit_or_surplus: z.number().optional().describe('Calorie deficit (-) or surplus (+)')
+  deficit_or_surplus: z
+    .number()
+    .optional()
+    .describe('Calorie deficit (-) or surplus (+)'),
 });
 
 const exerciseSchema = z.object({
   name: z.string().describe('Exercise name'),
   sets: z.number().optional().describe('Number of sets'),
-  reps: z.string().optional().describe('Reps or duration (e.g., "8-10" or "30 seconds")'),
+  reps: z
+    .string()
+    .optional()
+    .describe('Reps or duration (e.g., "8-10" or "30 seconds")'),
   rest_seconds: z.number().optional().describe('Rest time between sets'),
   instructions: z.string().describe('How to perform the exercise correctly'),
   modifications: z.string().optional().describe('Easier/harder variations'),
@@ -111,13 +117,22 @@ const fitnessplanSchema = z.object({
   weekly_workouts: z.array(workoutSchema).describe('7-day workout plan'),
   meal_plan: z.array(dailyMealPlanSchema).describe('7-day meal plan'),
   grocery_list: groceryListSchema,
-  weekly_tips: z.array(z.string()).describe('3-5 motivational tips for the week'),
-  check_in_questions: z.array(z.string()).describe('3 questions to ask user next week'),
+  weekly_tips: z
+    .array(z.string())
+    .describe('3-5 motivational tips for the week'),
+  check_in_questions: z
+    .array(z.string())
+    .describe('3 questions to ask user next week'),
   important_notes: z.string().describe('Important safety notes and reminders'),
 });
 
 // Utility Functions
-function calculateBMR(age: number, sex: string, weightKg: number, heightCm: number): number {
+function calculateBMR(
+  age: number,
+  sex: string,
+  weightKg: number,
+  heightCm: number
+): number {
   // Mifflin-St Jeor Equation
   const base = 10 * weightKg + 6.25 * heightCm - 5 * age;
   return sex.toUpperCase() === 'MALE' ? base + 5 : base - 161;
@@ -134,11 +149,15 @@ function calculateTDEE(bmr: number, activityLevel: string): number {
   return bmr * (multipliers[activityLevel as keyof typeof multipliers] || 1.2);
 }
 
-function getCalorieAdjustment(goal: string, currentWeight: number, goalWeight?: number): number {
+function getCalorieAdjustment(
+  goal: string,
+  currentWeight: number,
+  goalWeight?: number
+): number {
   if (!goalWeight) return 0;
-  
+
   const weightDiff = currentWeight - goalWeight;
-  
+
   switch (goal) {
     case 'LOSE_WEIGHT':
       return Math.min(-300, -weightDiff * 50); // Max deficit of 300 cal/day
@@ -167,11 +186,14 @@ export class FitnessCoachAI {
   /**
    * Generate a comprehensive 7-day fitness and nutrition plan
    */
-  async generateWeeklyPlan(intakeForm: IntakeForm, useCache: boolean = true): Promise<any> {
+  async generateWeeklyPlan(
+    intakeForm: IntakeForm,
+    useCache: boolean = true
+  ): Promise<any> {
     try {
       // Create cache key from intake form
       const cacheKey = this.createCacheKey(intakeForm);
-      
+
       // Check cache first
       if (useCache && this.cache.has(cacheKey)) {
         const cached = this.cache.get(cacheKey);
@@ -183,14 +205,14 @@ export class FitnessCoachAI {
 
       // Calculate nutritional needs
       const bmr = calculateBMR(
-        intakeForm.age, 
-        intakeForm.sex, 
-        intakeForm.weight_kg, 
+        intakeForm.age,
+        intakeForm.sex,
+        intakeForm.weight_kg,
         intakeForm.height_cm
       );
-      
+
       const tdee = calculateTDEE(bmr, intakeForm.activity_level);
-      
+
       const calorieAdjustment = getCalorieAdjustment(
         intakeForm.primary_goal,
         intakeForm.weight_kg,
@@ -201,7 +223,7 @@ export class FitnessCoachAI {
       const prompt = this.buildPlanGenerationPrompt(intakeForm, {
         bmr,
         tdee,
-        dailyTarget: tdee + calorieAdjustment
+        dailyTarget: tdee + calorieAdjustment,
       });
 
       console.log('Generating plan with AI...');
@@ -222,12 +244,11 @@ export class FitnessCoachAI {
       if (useCache) {
         this.cache.set(cacheKey, {
           data: planData,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
 
       return planData;
-
     } catch (error) {
       console.error('Error generating fitness plan:', error);
       throw new Error('Failed to generate fitness plan. Please try again.');
@@ -238,13 +259,13 @@ export class FitnessCoachAI {
    * Generate AI chat response for user questions
    */
   async generateChatResponse(
-    message: string, 
+    message: string,
     context: ChatContext,
     userId: string
   ): Promise<string> {
     try {
       const contextPrompt = this.buildChatContextPrompt(context);
-      
+
       const prompt = `
 ${contextPrompt}
 
@@ -268,7 +289,6 @@ Keep your response under 200 words and actionable.`;
       });
 
       return result.text;
-
     } catch (error) {
       console.error('Error generating chat response:', error);
       return "I'm having trouble processing your question right now. Please try again, or contact support if the issue persists.";
@@ -312,7 +332,6 @@ Respond with specific exercise modifications, not a complete new workout.`;
         user_notes: `Modified based on feedback: ${userFeedback}`,
         // Add parsed modifications here
       };
-
     } catch (error) {
       console.error('Error modifying workout:', error);
       throw new Error('Failed to modify workout. Please try again.');
@@ -349,10 +368,9 @@ Generate a motivational message (2-3 sentences) that:
       });
 
       return result.text;
-
     } catch (error) {
       console.error('Error generating motivational message:', error);
-      return "Keep up the great work! Every workout brings you closer to your goals. 💪";
+      return 'Keep up the great work! Every workout brings you closer to your goals. 💪';
     }
   }
 
@@ -360,7 +378,7 @@ Generate a motivational message (2-3 sentences) that:
    * Build prompt for plan generation
    */
   private buildPlanGenerationPrompt(
-    intakeForm: IntakeForm, 
+    intakeForm: IntakeForm,
     calories: { bmr: number; tdee: number; dailyTarget: number }
   ): string {
     return `
@@ -411,19 +429,19 @@ Generate a comprehensive plan that this user can immediately start following.`;
    */
   private buildChatContextPrompt(context: ChatContext): string {
     let contextStr = 'CURRENT CONTEXT:\n';
-    
+
     if (context.current_workout) {
       contextStr += `- Today's workout: ${context.current_workout.title} (${context.current_workout.duration_min} min)\n`;
     }
-    
+
     if (context.available_equipment) {
       contextStr += `- Available equipment: ${context.available_equipment.join(', ')}\n`;
     }
-    
+
     if (context.user_preferences) {
       contextStr += `- User preferences: ${JSON.stringify(context.user_preferences)}\n`;
     }
-    
+
     return contextStr;
   }
 
@@ -444,7 +462,7 @@ Generate a comprehensive plan that this user can immediately start following.`;
       days: intakeForm.days_per_week,
       duration: intakeForm.session_minutes,
     };
-    
+
     return Buffer.from(JSON.stringify(keyData)).toString('base64');
   }
 
@@ -461,7 +479,7 @@ Generate a comprehensive plan that this user can immediately start following.`;
   getCacheStats(): { size: number; keys: string[] } {
     return {
       size: this.cache.size,
-      keys: Array.from(this.cache.keys())
+      keys: Array.from(this.cache.keys()),
     };
   }
 }

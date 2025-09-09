@@ -10,6 +10,7 @@
 ## 📋 MVP FEATURE CHECKLIST
 
 ### ✅ Core Features
+
 - [ ] User Authentication (JWT + OAuth)
 - [ ] Comprehensive Intake Form (20+ questions)
 - [ ] AI Plan Generation (Workouts + Meals)
@@ -20,6 +21,7 @@
 - [ ] Adaptive Plan Modifications
 
 ### ✅ Technical Requirements
+
 - [ ] Flutter Mobile App (iOS/Android)
 - [ ] Java Spring Boot Backend
 - [ ] MySQL Database with Redis Cache
@@ -81,31 +83,35 @@
 ## 📱 USER FLOWS
 
 ### 1. Onboarding Flow
+
 ```
-App Launch → Welcome Screen → Sign Up/Login → 
-Email Verification → Intake Form (20 questions) → 
-Plan Generation (60s loading) → Welcome to Your Plan → 
+App Launch → Welcome Screen → Sign Up/Login →
+Email Verification → Intake Form (20 questions) →
+Plan Generation (60s loading) → Welcome to Your Plan →
 Home Dashboard
 ```
 
 ### 2. Daily Usage Flow
+
 ```
-Home Dashboard → Today's Schedule → Start Workout → 
-Exercise Tracking → Workout Complete → Log Meals → 
+Home Dashboard → Today's Schedule → Start Workout →
+Exercise Tracking → Workout Complete → Log Meals →
 Progress Updates → Tomorrow Preview
 ```
 
 ### 3. Coach Interaction Flow
+
 ```
-Question/Issue → Open Chat → AI Response → 
-Plan Modification (if needed) → Updated Schedule → 
+Question/Issue → Open Chat → AI Response →
+Plan Modification (if needed) → Updated Schedule →
 Confirmation & Motivation
 ```
 
 ### 4. Weekly Review Flow
+
 ```
-Week Summary → Progress Analysis → Plan Effectiveness → 
-User Feedback → Adaptive Modifications → 
+Week Summary → Progress Analysis → Plan Effectiveness →
+User Feedback → Adaptive Modifications →
 New Week Generation
 ```
 
@@ -114,12 +120,14 @@ New Week Generation
 ## 📝 INTAKE FORM - TYPEFORM STYLE
 
 ### Personal Info (4 questions)
+
 1. **Full Name** (text, required)
 2. **Email** (email, auto-filled if logged in)
 3. **Phone** (optional, for reminders)
 4. **Timezone** (auto-detect, confirm)
 
 ### Physical Profile (6 questions)
+
 5. **Age** (18-100, slider)
 6. **Biological Sex** (Male/Female/Other/Prefer not to say)
 7. **Height** (cm/ft toggle, required)
@@ -128,7 +136,8 @@ New Week Generation
 10. **Target Timeline** (date picker, optional)
 
 ### Fitness Assessment (6 questions)
-11. **Activity Level** 
+
+11. **Activity Level**
     - Sedentary (desk job, little exercise)
     - Light (light exercise 1-3 days/week)
     - Moderate (moderate exercise 3-5 days/week)
@@ -148,6 +157,7 @@ New Week Generation
 16. **Fitness Experience** (Beginner/Intermediate/Advanced)
 
 ### Health & Nutrition (4 questions)
+
 17. **Injuries/Limitations** (textarea, optional)
 18. **Dietary Preferences** (Vegetarian/Vegan/Keto/etc.)
 19. **Food Allergies** (common allergens checklist + text)
@@ -158,8 +168,9 @@ New Week Generation
 ## 🤖 LLM INTEGRATION
 
 ### System Prompt Template
+
 ```
-You are FitForge AI, a professional fitness coach and nutritionist. 
+You are FitForge AI, a professional fitness coach and nutritionist.
 
 CORE PRINCIPLES:
 - Evidence-based recommendations only
@@ -174,12 +185,13 @@ NUTRITION: Focus on balanced, realistic meal plans within calorie targets
 ```
 
 ### Plan Generation Prompt
+
 ```
 Generate a 7-day personalized fitness and nutrition plan for:
 
 USER PROFILE:
 {
-  "age": {{age}}, "sex": "{{sex}}", "height_cm": {{height}}, 
+  "age": {{age}}, "sex": "{{sex}}", "height_cm": {{height}},
   "weight_kg": {{weight}}, "goal_weight_kg": {{goal_weight}},
   "activity_level": "{{activity}}", "fitness_level": "{{fitness_level}}",
   "training_preferences": {{training_prefs}}, "days_per_week": {{days}},
@@ -320,9 +332,10 @@ CREATE TABLE chat_history (
 ## 🔌 API ENDPOINTS
 
 ### Authentication
+
 ```
 POST /api/auth/register          - User registration
-POST /api/auth/login             - User login  
+POST /api/auth/login             - User login
 POST /api/auth/refresh           - Refresh access token
 POST /api/auth/logout            - Logout user
 POST /api/auth/verify-email      - Email verification
@@ -330,6 +343,7 @@ POST /api/auth/forgot-password   - Password reset request
 ```
 
 ### User Management
+
 ```
 GET    /api/users/me             - Get current user profile
 PUT    /api/users/me             - Update user profile
@@ -339,6 +353,7 @@ GET    /api/users/me/stats       - Get user statistics
 ```
 
 ### Plan Management
+
 ```
 POST /api/plans/generate         - Generate new plan
 GET  /api/plans/{planId}         - Get specific plan
@@ -347,6 +362,7 @@ PUT  /api/plans/{planId}/status  - Update plan status
 ```
 
 ### Workouts
+
 ```
 GET  /api/workouts/today         - Get today's workout
 POST /api/workouts/{id}/start    - Start workout session
@@ -355,6 +371,7 @@ GET  /api/users/me/workouts      - Get workout history
 ```
 
 ### Coach Chat
+
 ```
 POST /api/chat/message           - Send message to AI coach
 GET  /api/chat/history           - Get chat history
@@ -362,6 +379,7 @@ POST /api/chat/feedback          - Provide feedback on response
 ```
 
 ### Progress Tracking
+
 ```
 POST /api/progress               - Add progress entry
 GET  /api/progress               - Get progress history
@@ -374,34 +392,36 @@ GET  /api/progress/summary       - Get progress summary/charts
 ## 🔧 TECH STACK SPECIFICATION
 
 ### Mobile App (Flutter)
+
 ```yaml
 dependencies:
   flutter: ^3.16.0
-  flutter_bloc: ^8.1.3          # State management
-  dio: ^5.3.2                    # HTTP client
-  hive: ^2.2.3                   # Local storage
+  flutter_bloc: ^8.1.3 # State management
+  dio: ^5.3.2 # HTTP client
+  hive: ^2.2.3 # Local storage
   hive_flutter: ^1.1.0
-  shared_preferences: ^2.2.2     # User preferences
-  firebase_messaging: ^14.7.4    # Push notifications
+  shared_preferences: ^2.2.2 # User preferences
+  firebase_messaging: ^14.7.4 # Push notifications
   firebase_core: ^2.24.2
-  image_picker: ^1.0.4           # Progress photos
-  permission_handler: ^11.0.1    # Permissions
+  image_picker: ^1.0.4 # Progress photos
+  permission_handler: ^11.0.1 # Permissions
   flutter_secure_storage: ^9.0.0 # Secure token storage
-  charts_flutter: ^0.12.0        # Progress charts
-  pdf: ^3.10.4                   # PDF generation
-  path_provider: ^2.1.1          # File system access
-  cached_network_image: ^3.3.0   # Image caching
-  timeago: ^3.4.0                # Time formatting
-  intl: ^0.18.1                  # Internationalization
+  charts_flutter: ^0.12.0 # Progress charts
+  pdf: ^3.10.4 # PDF generation
+  path_provider: ^2.1.1 # File system access
+  cached_network_image: ^3.3.0 # Image caching
+  timeago: ^3.4.0 # Time formatting
+  intl: ^0.18.1 # Internationalization
 
 dev_dependencies:
   flutter_test: ^3.16.0
   flutter_lints: ^3.0.0
-  mockito: ^5.4.2                # Testing mocks
-  bloc_test: ^9.1.4              # BLoC testing
+  mockito: ^5.4.2 # Testing mocks
+  bloc_test: ^9.1.4 # BLoC testing
 ```
 
 ### Backend (Spring Boot)
+
 ```xml
 <dependencies>
     <dependency>

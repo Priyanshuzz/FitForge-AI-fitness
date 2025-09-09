@@ -1,16 +1,16 @@
-"use client"
+'use client';
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { WifiOff, RefreshCw, Home, Dumbbell } from "lucide-react"
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { WifiOff, RefreshCw, Home, Dumbbell } from 'lucide-react';
 
 export default function OfflinePage() {
   const handleRefresh = () => {
     if (typeof window !== 'undefined') {
-      window.location.reload()
+      window.location.reload();
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
@@ -26,12 +26,15 @@ export default function OfflinePage() {
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <p className="text-slate-600">
-              It looks like you've lost your internet connection. Don't worry, you can still access some features of FitForge AI while offline.
+              It looks like you've lost your internet connection. Don't worry,
+              you can still access some features of FitForge AI while offline.
             </p>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">Available Offline:</h4>
+            <h4 className="font-semibold text-blue-800 mb-2">
+              Available Offline:
+            </h4>
             <ul className="text-sm text-blue-700 space-y-1 text-left">
               <li>• View cached workout plans</li>
               <li>• Track progress entries</li>
@@ -45,7 +48,7 @@ export default function OfflinePage() {
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
             </Button>
-            
+
             <Link href="/" className="w-full">
               <Button variant="outline" className="w-full">
                 <Home className="w-4 h-4 mr-2" />
@@ -66,5 +69,5 @@ export default function OfflinePage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 /**
  * Health Check API Route
- * 
+ *
  * Provides application health status for monitoring and load balancers
  */
 
@@ -26,28 +26,32 @@ interface HealthStatus {
 export async function GET(): Promise<NextResponse> {
   const startTime = Date.now();
   const timestamp = new Date().toISOString();
-  
+
   try {
     // Check database connectivity
     const databaseStatus = await checkDatabase();
-    
+
     // Check AI service (OpenAI)
     const aiStatus = await checkAIService();
-    
+
     // Check storage service
     const storageStatus = await checkStorage();
-    
+
     // Calculate overall health
     const services = {
       database: databaseStatus,
       ai: aiStatus,
-      storage: storageStatus
+      storage: storageStatus,
     };
-    
+
     const serviceStatuses = Object.values(services);
-    const downServices = serviceStatuses.filter(status => status === 'down').length;
-    const unknownServices = serviceStatuses.filter(status => status === 'unknown').length;
-    
+    const downServices = serviceStatuses.filter(
+      status => status === 'down'
+    ).length;
+    const unknownServices = serviceStatuses.filter(
+      status => status === 'unknown'
+    ).length;
+
     let overallStatus: 'healthy' | 'degraded' | 'unhealthy';
     if (downServices === 0 && unknownServices === 0) {
       overallStatus = 'healthy';
@@ -56,9 +60,9 @@ export async function GET(): Promise<NextResponse> {
     } else {
       overallStatus = 'unhealthy';
     }
-    
+
     const responseTime = Date.now() - startTime;
-    
+
     const healthStatus: HealthStatus = {
       status: overallStatus,
       timestamp,
@@ -67,21 +71,27 @@ export async function GET(): Promise<NextResponse> {
       services,
       metrics: {
         responseTime,
-        ...(typeof process !== 'undefined' && process.memoryUsage && {
-          memoryUsage: Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100
-        })
-      }
+        ...(typeof process !== 'undefined' &&
+          process.memoryUsage && {
+            memoryUsage:
+              Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) /
+              100,
+          }),
+      },
     };
-    
+
     // Return appropriate HTTP status code
-    const httpStatus = overallStatus === 'healthy' ? 200 : 
-                      overallStatus === 'degraded' ? 207 : 503;
-    
+    const httpStatus =
+      overallStatus === 'healthy'
+        ? 200
+        : overallStatus === 'degraded'
+          ? 207
+          : 503;
+
     return NextResponse.json(healthStatus, { status: httpStatus });
-    
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     const errorStatus: HealthStatus = {
       status: 'unhealthy',
       timestamp,
@@ -90,13 +100,13 @@ export async function GET(): Promise<NextResponse> {
       services: {
         database: 'unknown',
         ai: 'unknown',
-        storage: 'unknown'
+        storage: 'unknown',
       },
       metrics: {
-        responseTime
-      }
+        responseTime,
+      },
     };
-    
+
     return NextResponse.json(errorStatus, { status: 503 });
   }
 }
@@ -107,10 +117,10 @@ async function checkDatabase(): Promise<'up' | 'down' | 'unknown'> {
     if (!supabase) {
       return 'unknown';
     }
-    
+
     // Simple query to check database connectivity
     const { error } = await supabase.from('profiles').select('count').limit(1);
-    
+
     return error ? 'down' : 'up';
   } catch (error) {
     console.error('Database health check failed:', error);
@@ -123,17 +133,17 @@ async function checkAIService(): Promise<'up' | 'down' | 'unknown'> {
     if (!process.env.OPENAI_API_KEY) {
       return 'unknown';
     }
-    
+
     // Simple request to OpenAI API to check connectivity
     const response = await fetch('https://api.openai.com/v1/models', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
       },
-      signal: AbortSignal.timeout(5000) // 5 second timeout
+      signal: AbortSignal.timeout(5000), // 5 second timeout
     });
-    
+
     return response.ok ? 'up' : 'down';
   } catch (error) {
     console.error('AI service health check failed:', error);

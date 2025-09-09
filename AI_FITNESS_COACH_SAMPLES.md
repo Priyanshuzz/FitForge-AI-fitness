@@ -5,11 +5,12 @@
 ### Authentication Endpoints
 
 #### POST /api/auth/register
+
 ```json
 // Request
 {
   "name": "John Doe",
-  "email": "john@example.com", 
+  "email": "john@example.com",
   "password": "SecurePass123",
   "timezone": "America/New_York"
 }
@@ -29,6 +30,7 @@
 ```
 
 #### POST /api/auth/login
+
 ```json
 // Request
 {
@@ -51,6 +53,7 @@
 ### Plan Generation
 
 #### POST /api/plans/generate
+
 ```json
 // Request
 {
@@ -74,6 +77,7 @@
 ```
 
 #### GET /api/plans/{planId}
+
 ```json
 // Response (200)
 {
@@ -95,8 +99,8 @@
       "duration_min": 45,
       "difficulty": "INTERMEDIATE",
       "warmup": [
-        {"name": "Arm Circles", "duration": "30 seconds"},
-        {"name": "Light Jogging", "duration": "5 minutes"}
+        { "name": "Arm Circles", "duration": "30 seconds" },
+        { "name": "Light Jogging", "duration": "5 minutes" }
       ],
       "exercises": [
         {
@@ -110,15 +114,15 @@
         {
           "name": "Bent-over Rows",
           "sets": 4,
-          "reps": "8-10", 
+          "reps": "8-10",
           "rest_sec": 90,
           "instructions": "Pull dumbbells to ribcage, squeeze shoulder blades",
           "target_muscles": ["back", "biceps"]
         }
       ],
       "cooldown": [
-        {"name": "Chest Stretch", "duration": "30 seconds"},
-        {"name": "Shoulder Stretch", "duration": "30 seconds"}
+        { "name": "Chest Stretch", "duration": "30 seconds" },
+        { "name": "Shoulder Stretch", "duration": "30 seconds" }
       ]
     }
   ],
@@ -138,13 +142,18 @@
           "instructions": "Mix yogurt with berries, top with granola and drizzle honey"
         },
         {
-          "type": "lunch", 
+          "type": "lunch",
           "name": "Grilled Chicken Salad",
           "calories": 420,
           "protein": 35,
           "carbs": 15,
           "fat": 18,
-          "ingredients": ["chicken breast", "mixed greens", "tomatoes", "olive oil"]
+          "ingredients": [
+            "chicken breast",
+            "mixed greens",
+            "tomatoes",
+            "olive oil"
+          ]
         }
       ]
     }
@@ -160,6 +169,7 @@
 ### Chat Endpoints
 
 #### POST /api/chat/message
+
 ```json
 // Request
 {
@@ -196,6 +206,7 @@
 ## 📱 FLUTTER CODE SAMPLES
 
 ### Authentication BLoC
+
 ```dart
 // auth_bloc.dart
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -208,7 +219,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }) : _authRepository = authRepository,
        _tokenStorage = tokenStorage,
        super(AuthInitial()) {
-    
+
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthRegisterRequested>(_onRegisterRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
@@ -219,18 +230,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    
+
     try {
       final result = await _authRepository.login(
         email: event.email,
         password: event.password,
       );
-      
+
       await _tokenStorage.storeTokens(
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
       );
-      
+
       emit(AuthAuthenticated(user: result.user));
     } catch (error) {
       emit(AuthError(message: error.toString()));
@@ -240,6 +251,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 ```
 
 ### Intake Form Widget
+
 ```dart
 // intake_form_page.dart
 class IntakeFormPage extends StatefulWidget {
@@ -298,6 +310,7 @@ class _IntakeFormPageState extends State<IntakeFormPage> {
 ```
 
 ### Workout Card Component
+
 ```dart
 // workout_card.dart
 class WorkoutCard extends StatelessWidget {
@@ -369,7 +382,7 @@ class WorkoutCard extends StatelessWidget {
   Widget _buildStatusChip() {
     Color color;
     String text;
-    
+
     switch (workout.status) {
       case WorkoutStatus.scheduled:
         color = Colors.blue;
@@ -400,6 +413,7 @@ class WorkoutCard extends StatelessWidget {
 ## ☕ SPRING BOOT CODE SAMPLES
 
 ### User Controller
+
 ```java
 @RestController
 @RequestMapping("/api/users")
@@ -422,7 +436,7 @@ public class UserController {
     public ResponseEntity<UserProfileDto> updateProfile(
             @Valid @RequestBody UserUpdateDto updateDto,
             Authentication authentication) {
-        
+
         Long userId = Long.parseLong(authentication.getName());
         UserProfileDto updatedUser = userService.updateUser(userId, updateDto);
         return ResponseEntity.ok(updatedUser);
@@ -433,21 +447,22 @@ public class UserController {
     public ResponseEntity<PlanGenerationJobDto> submitIntakeForm(
             @Valid @RequestBody IntakeFormDto intakeDto,
             Authentication authentication) {
-        
+
         Long userId = Long.parseLong(authentication.getName());
         intakeDto.setUserId(userId);
-        
+
         IntakeForm savedForm = userService.saveIntakeForm(intakeDto);
         PlanGenerationJobDto job = planGenerationService.generatePlan(
             new PlanGenerationRequestDto(userId, savedForm.getId())
         );
-        
+
         return ResponseEntity.accepted().body(job);
     }
 }
 ```
 
-### LLM Service Implementation  
+### LLM Service Implementation
+
 ```java
 @Service
 public class LLMService {
@@ -464,7 +479,7 @@ public class LLMService {
     public PlanData generateWeeklyPlan(IntakeForm intakeForm) {
         String prompt = buildPrompt(intakeForm);
         String cacheKey = "llm:plan:" + DigestUtils.md5Hex(prompt);
-        
+
         // Check cache first
         PlanData cached = (PlanData) redisTemplate.opsForValue().get(cacheKey);
         if (cached != null) {
@@ -513,11 +528,11 @@ public class LLMService {
             Age: %d, Sex: %s, Height: %.1fcm, Weight: %.1fkg
             Goal: %s, Activity: %s, Equipment: %s
             Restrictions: %s
-            
+
             Return valid JSON with workout and meal plan data.
             """,
-            form.getAge(), form.getSex(), form.getHeightCm(), 
-            form.getWeightKg(), form.getPrimaryGoal(), 
+            form.getAge(), form.getSex(), form.getHeightCm(),
+            form.getWeightKg(), form.getPrimaryGoal(),
             form.getActivityLevel(), form.getEquipment(),
             form.getInjuriesLimitations()
         );
@@ -526,6 +541,7 @@ public class LLMService {
 ```
 
 ### Plan Generation Worker
+
 ```java
 @Component
 public class PlanGenerationWorker {
@@ -555,7 +571,7 @@ public class PlanGenerationWorker {
             // Save plan
             Plan plan = planRepository.findById(job.getPlanId())
                 .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
-            
+
             plan.setPlanData(objectMapper.writeValueAsString(planData));
             plan.setStatus(PlanStatus.ACTIVE);
             plan.setDailyCalorieTarget(planData.getCalorieCalculation().getDailyTarget());
@@ -572,13 +588,13 @@ public class PlanGenerationWorker {
 
         } catch (Exception e) {
             log.error("Error generating plan for job: {}", job, e);
-            
+
             // Update plan status to failed
             planRepository.findById(job.getPlanId()).ifPresent(plan -> {
                 plan.setStatus(PlanStatus.FAILED);
                 planRepository.save(plan);
             });
-            
+
             // Send error notification
             notificationService.sendPlanErrorNotification(job.getUserId());
         }
@@ -594,7 +610,7 @@ public class PlanGenerationWorker {
             workout.setDurationMin(workoutData.getDurationMin());
             workout.setWorkoutData(objectMapper.writeValueAsString(workoutData));
             workout.setStatus(WorkoutStatus.SCHEDULED);
-            
+
             workoutRepository.save(workout);
         }
     }
@@ -604,6 +620,7 @@ public class PlanGenerationWorker {
 ## 🗄️ DATABASE SEED DATA
 
 ### Sample Users
+
 ```sql
 INSERT INTO users (email, password_hash, name, timezone) VALUES
 ('demo@fitforge.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqttf98.fm/AZfG/1qONlHa', 'Demo User', 'America/New_York'),

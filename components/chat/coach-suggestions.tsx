@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Target,
   TrendingUp,
   Calendar,
@@ -16,7 +16,7 @@ import {
   Dumbbell,
   Moon,
   Sun,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 import { ChatContext } from '@/lib/types/fitness';
 
@@ -37,117 +37,133 @@ interface Suggestion {
   personalized: boolean;
 }
 
-export function CoachSuggestions({ userId, context, onSuggestionSelect }: CoachSuggestionsProps) {
+export function CoachSuggestions({
+  userId,
+  context,
+  onSuggestionSelect,
+}: CoachSuggestionsProps) {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
     generatePersonalizedSuggestions();
-  }, [context]);
+  }, [context, generatePersonalizedSuggestions]);
 
-  const generatePersonalizedSuggestions = () => {
+  const generatePersonalizedSuggestions = useCallback(() => {
     // Generate suggestions based on user context
     const baseSuggestions: Suggestion[] = [
       {
         id: 'progress-check',
         title: 'Weekly Progress Review',
-        description: 'Review your achievements and areas for improvement this week',
-        prompt: 'Can you analyze my progress this week and highlight my achievements and areas where I can improve?',
+        description:
+          'Review your achievements and areas for improvement this week',
+        prompt:
+          'Can you analyze my progress this week and highlight my achievements and areas where I can improve?',
         icon: <TrendingUp className="w-5 h-5" />,
         category: 'progress',
         priority: 'high',
-        personalized: true
+        personalized: true,
       },
       {
         id: 'workout-modification',
         title: 'Workout Adjustment',
-        description: 'Modify your workout based on how you\'re feeling today',
-        prompt: 'I want to adjust today\'s workout. I\'m feeling [describe how you feel] and would like suggestions for modifications.',
+        description: "Modify your workout based on how you're feeling today",
+        prompt:
+          "I want to adjust today's workout. I'm feeling [describe how you feel] and would like suggestions for modifications.",
         icon: <Dumbbell className="w-5 h-5" />,
         category: 'workout',
         priority: 'high',
-        personalized: true
+        personalized: true,
       },
       {
         id: 'nutrition-optimization',
         title: 'Meal Plan Optimization',
-        description: 'Get suggestions to improve your nutrition based on your goals',
-        prompt: 'Based on my current goals and progress, how can I optimize my meal plan for better results?',
+        description:
+          'Get suggestions to improve your nutrition based on your goals',
+        prompt:
+          'Based on my current goals and progress, how can I optimize my meal plan for better results?',
         icon: <Utensils className="w-5 h-5" />,
         category: 'nutrition',
         priority: 'medium',
-        personalized: true
+        personalized: true,
       },
       {
         id: 'motivation-boost',
         title: 'Motivation & Mindset',
         description: 'Get personalized motivation and mental strategies',
-        prompt: 'I need some motivation and mental strategies to stay consistent with my fitness journey. What advice do you have?',
+        prompt:
+          'I need some motivation and mental strategies to stay consistent with my fitness journey. What advice do you have?',
         icon: <Heart className="w-5 h-5" />,
         category: 'motivation',
         priority: 'medium',
-        personalized: false
+        personalized: false,
       },
       {
         id: 'recovery-tips',
         title: 'Recovery & Rest',
         description: 'Learn about proper recovery techniques for your routine',
-        prompt: 'What are the best recovery techniques I should be incorporating based on my current workout routine?',
+        prompt:
+          'What are the best recovery techniques I should be incorporating based on my current workout routine?',
         icon: <Moon className="w-5 h-5" />,
         category: 'recovery',
         priority: 'medium',
-        personalized: true
+        personalized: true,
       },
       {
         id: 'form-technique',
         title: 'Exercise Form Check',
         description: 'Get detailed guidance on proper exercise technique',
-        prompt: 'Can you give me detailed instructions on proper form for the exercises in my current workout plan?',
+        prompt:
+          'Can you give me detailed instructions on proper form for the exercises in my current workout plan?',
         icon: <Target className="w-5 h-5" />,
         category: 'workout',
         priority: 'high',
-        personalized: true
+        personalized: true,
       },
       {
         id: 'plateau-breakthrough',
         title: 'Plateau Breakthrough',
         description: 'Strategies to overcome fitness plateaus',
-        prompt: 'I feel like I\'ve hit a plateau in my progress. What strategies can help me break through and continue improving?',
+        prompt:
+          "I feel like I've hit a plateau in my progress. What strategies can help me break through and continue improving?",
         icon: <Zap className="w-5 h-5" />,
         category: 'progress',
         priority: 'high',
-        personalized: true
+        personalized: true,
       },
       {
         id: 'energy-optimization',
         title: 'Energy & Performance',
         description: 'Tips to boost energy levels and workout performance',
-        prompt: 'How can I optimize my energy levels and improve my workout performance naturally?',
+        prompt:
+          'How can I optimize my energy levels and improve my workout performance naturally?',
         icon: <Sun className="w-5 h-5" />,
         category: 'nutrition',
         priority: 'medium',
-        personalized: false
+        personalized: false,
       },
       {
         id: 'habit-building',
         title: 'Habit Formation',
         description: 'Build lasting healthy habits and routines',
-        prompt: 'Help me build sustainable healthy habits that will stick long-term. What\'s the best approach?',
+        prompt:
+          "Help me build sustainable healthy habits that will stick long-term. What's the best approach?",
         icon: <Brain className="w-5 h-5" />,
         category: 'motivation',
         priority: 'medium',
-        personalized: false
+        personalized: false,
       },
       {
         id: 'goal-setting',
         title: 'Goal Refinement',
         description: 'Refine and adjust your fitness goals',
-        prompt: 'I want to review and potentially adjust my fitness goals. Can you help me set realistic and motivating targets?',
+        prompt:
+          'I want to review and potentially adjust my fitness goals. Can you help me set realistic and motivating targets?',
         icon: <Calendar className="w-5 h-5" />,
         category: 'progress',
         priority: 'low',
-        personalized: true
-      }
+        personalized: true,
+      },
     ];
 
     // Add context-based suggestions
@@ -162,7 +178,7 @@ export function CoachSuggestions({ userId, context, onSuggestionSelect }: CoachS
         icon: <Dumbbell className="w-5 h-5" />,
         category: 'workout',
         priority: 'high',
-        personalized: true
+        personalized: true,
       });
     }
 
@@ -171,29 +187,55 @@ export function CoachSuggestions({ userId, context, onSuggestionSelect }: CoachS
         id: 'progress-analysis',
         title: 'Recent Progress Analysis',
         description: 'Analyze your recent progress entries',
-        prompt: 'Based on my recent progress entries, what patterns do you notice and what recommendations do you have?',
+        prompt:
+          'Based on my recent progress entries, what patterns do you notice and what recommendations do you have?',
         icon: <TrendingUp className="w-5 h-5" />,
         category: 'progress',
         priority: 'high',
-        personalized: true
+        personalized: true,
       });
     }
 
     setSuggestions([...contextualSuggestions, ...baseSuggestions]);
-  };
+  }, [context]);
 
   const categories = [
-    { value: 'all', label: 'All Suggestions', icon: <Brain className="w-4 h-4" /> },
-    { value: 'workout', label: 'Workout', icon: <Dumbbell className="w-4 h-4" /> },
-    { value: 'nutrition', label: 'Nutrition', icon: <Utensils className="w-4 h-4" /> },
-    { value: 'progress', label: 'Progress', icon: <TrendingUp className="w-4 h-4" /> },
-    { value: 'motivation', label: 'Motivation', icon: <Heart className="w-4 h-4" /> },
-    { value: 'recovery', label: 'Recovery', icon: <Moon className="w-4 h-4" /> }
+    {
+      value: 'all',
+      label: 'All Suggestions',
+      icon: <Brain className="w-4 h-4" />,
+    },
+    {
+      value: 'workout',
+      label: 'Workout',
+      icon: <Dumbbell className="w-4 h-4" />,
+    },
+    {
+      value: 'nutrition',
+      label: 'Nutrition',
+      icon: <Utensils className="w-4 h-4" />,
+    },
+    {
+      value: 'progress',
+      label: 'Progress',
+      icon: <TrendingUp className="w-4 h-4" />,
+    },
+    {
+      value: 'motivation',
+      label: 'Motivation',
+      icon: <Heart className="w-4 h-4" />,
+    },
+    {
+      value: 'recovery',
+      label: 'Recovery',
+      icon: <Moon className="w-4 h-4" />,
+    },
   ];
 
-  const filteredSuggestions = selectedCategory === 'all'
-    ? suggestions
-    : suggestions.filter(s => s.category === selectedCategory);
+  const filteredSuggestions =
+    selectedCategory === 'all'
+      ? suggestions
+      : suggestions.filter(s => s.category === selectedCategory);
 
   const prioritizedSuggestions = filteredSuggestions.sort((a, b) => {
     const priorityOrder = { high: 3, medium: 2, low: 1 };
@@ -202,19 +244,39 @@ export function CoachSuggestions({ userId, context, onSuggestionSelect }: CoachS
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'border-red-200 bg-red-50';
-      case 'medium': return 'border-yellow-200 bg-yellow-50';
-      case 'low': return 'border-green-200 bg-green-50';
-      default: return 'border-gray-200 bg-gray-50';
+      case 'high':
+        return 'border-red-200 bg-red-50';
+      case 'medium':
+        return 'border-yellow-200 bg-yellow-50';
+      case 'low':
+        return 'border-green-200 bg-green-50';
+      default:
+        return 'border-gray-200 bg-gray-50';
     }
   };
 
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
-      case 'high': return <Badge variant="destructive" className="text-xs">High</Badge>;
-      case 'medium': return <Badge variant="secondary" className="text-xs">Medium</Badge>;
-      case 'low': return <Badge variant="outline" className="text-xs">Low</Badge>;
-      default: return null;
+      case 'high':
+        return (
+          <Badge variant="destructive" className="text-xs">
+            High
+          </Badge>
+        );
+      case 'medium':
+        return (
+          <Badge variant="secondary" className="text-xs">
+            Medium
+          </Badge>
+        );
+      case 'low':
+        return (
+          <Badge variant="outline" className="text-xs">
+            Low
+          </Badge>
+        );
+      default:
+        return null;
     }
   };
 
@@ -232,7 +294,9 @@ export function CoachSuggestions({ userId, context, onSuggestionSelect }: CoachS
         {categories.map(category => (
           <Button
             key={category.value}
-            variant={selectedCategory === category.value ? "default" : "outline"}
+            variant={
+              selectedCategory === category.value ? 'default' : 'outline'
+            }
             size="sm"
             onClick={() => setSelectedCategory(category.value)}
             className="flex items-center space-x-1"
@@ -252,7 +316,7 @@ export function CoachSuggestions({ userId, context, onSuggestionSelect }: CoachS
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Card 
+            <Card
               className={`cursor-pointer transition-all hover:shadow-md ${getPriorityColor(suggestion.priority)}`}
               onClick={() => onSuggestionSelect(suggestion.prompt)}
             >
@@ -260,9 +324,7 @@ export function CoachSuggestions({ userId, context, onSuggestionSelect }: CoachS
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-white rounded-lg shadow-sm">
-                      <div className="text-primary">
-                        {suggestion.icon}
-                      </div>
+                      <div className="text-primary">{suggestion.icon}</div>
                     </div>
                     <div className="flex-1">
                       <CardTitle className="text-sm font-medium">
@@ -296,9 +358,12 @@ export function CoachSuggestions({ userId, context, onSuggestionSelect }: CoachS
         <Card>
           <CardContent className="p-12 text-center">
             <Brain className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-            <h4 className="text-lg font-medium mb-2">No suggestions available</h4>
+            <h4 className="text-lg font-medium mb-2">
+              No suggestions available
+            </h4>
             <p className="text-muted-foreground">
-              Try selecting a different category or check back later for personalized recommendations.
+              Try selecting a different category or check back later for
+              personalized recommendations.
             </p>
           </CardContent>
         </Card>

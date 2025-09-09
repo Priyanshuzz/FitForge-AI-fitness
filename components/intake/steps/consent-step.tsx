@@ -4,14 +4,14 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Shield, 
-  Camera, 
-  AlertTriangle, 
-  FileText, 
-  Lock, 
+import {
+  Shield,
+  Camera,
+  AlertTriangle,
+  FileText,
+  Lock,
   Heart,
-  CheckCircle2
+  CheckCircle2,
 } from 'lucide-react';
 import type { IntakeForm } from '@/lib/types/fitness';
 
@@ -43,54 +43,61 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
             <p className="font-medium">
               Please read and understand the following before proceeding:
             </p>
-            
+
             <ul className="space-y-2 ml-4">
               <li className="flex items-start">
                 <div className="w-2 h-2 bg-amber-600 rounded-full mt-2 mr-3 flex-shrink-0" />
                 <span>
-                  <strong>Not Medical Advice:</strong> FitForge provides fitness and nutrition guidance only. 
-                  This is not medical advice, diagnosis, or treatment.
+                  <strong>Not Medical Advice:</strong> FitForge provides fitness
+                  and nutrition guidance only. This is not medical advice,
+                  diagnosis, or treatment.
                 </span>
               </li>
-              
+
               <li className="flex items-start">
                 <div className="w-2 h-2 bg-amber-600 rounded-full mt-2 mr-3 flex-shrink-0" />
                 <span>
-                  <strong>Consult Healthcare Professionals:</strong> Always consult with qualified healthcare 
-                  providers before starting any new exercise or nutrition program, especially if you have 
+                  <strong>Consult Healthcare Professionals:</strong> Always
+                  consult with qualified healthcare providers before starting
+                  any new exercise or nutrition program, especially if you have
                   health conditions, injuries, or concerns.
                 </span>
               </li>
-              
+
               <li className="flex items-start">
                 <div className="w-2 h-2 bg-amber-600 rounded-full mt-2 mr-3 flex-shrink-0" />
                 <span>
-                  <strong>Exercise at Your Own Risk:</strong> You participate in all activities at your own risk. 
-                  Stop exercising immediately if you experience pain, dizziness, or discomfort.
+                  <strong>Exercise at Your Own Risk:</strong> You participate in
+                  all activities at your own risk. Stop exercising immediately
+                  if you experience pain, dizziness, or discomfort.
                 </span>
               </li>
-              
+
               <li className="flex items-start">
                 <div className="w-2 h-2 bg-amber-600 rounded-full mt-2 mr-3 flex-shrink-0" />
                 <span>
-                  <strong>Individual Results Vary:</strong> Results may vary based on individual factors. 
-                  No specific outcomes are guaranteed.
+                  <strong>Individual Results Vary:</strong> Results may vary
+                  based on individual factors. No specific outcomes are
+                  guaranteed.
                 </span>
               </li>
             </ul>
           </div>
-          
+
           <div className="flex items-start space-x-3 pt-2">
             <Checkbox
               id="medical-consent"
               checked={data.medical_consent || false}
-              onCheckedChange={(checked) => 
+              onCheckedChange={checked =>
                 handleInputChange('medical_consent', checked as boolean)
               }
               className="mt-1"
             />
             <div>
-              <Label htmlFor="medical-consent" className="cursor-pointer font-medium text-amber-800">
+              <Label
+                htmlFor="medical-consent"
+                className="cursor-pointer font-medium text-amber-800"
+              >
                 I understand and acknowledge this medical disclaimer *
               </Label>
               <p className="text-xs text-amber-700 mt-1">
@@ -98,7 +105,7 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
               </p>
             </div>
           </div>
-          
+
           {errors.medical_consent && (
             <p className="text-sm text-destructive">{errors.medical_consent}</p>
           )}
@@ -116,10 +123,11 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
         <CardContent className="space-y-4">
           <div className="text-sm text-muted-foreground space-y-3">
             <p>
-              Progress photos can be a powerful tool for tracking your transformation and staying motivated. 
-              This permission is optional and you can change it anytime.
+              Progress photos can be a powerful tool for tracking your
+              transformation and staying motivated. This permission is optional
+              and you can change it anytime.
             </p>
-            
+
             <div className="bg-primary/5 p-3 rounded-lg">
               <h5 className="font-medium mb-2">What this enables:</h5>
               <ul className="space-y-1 text-sm">
@@ -129,7 +137,7 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
                 <li>• Motivational progress celebrations</li>
               </ul>
             </div>
-            
+
             <div className="bg-muted/50 p-3 rounded-lg">
               <h5 className="font-medium mb-2">Privacy guarantee:</h5>
               <ul className="space-y-1 text-sm">
@@ -140,18 +148,21 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
               </ul>
             </div>
           </div>
-          
+
           <div className="flex items-start space-x-3">
             <Checkbox
               id="photo-permission"
               checked={data.photo_permission || false}
-              onCheckedChange={(checked) => 
+              onCheckedChange={checked =>
                 handleInputChange('photo_permission', checked as boolean)
               }
               className="mt-1"
             />
             <div>
-              <Label htmlFor="photo-permission" className="cursor-pointer font-medium">
+              <Label
+                htmlFor="photo-permission"
+                className="cursor-pointer font-medium"
+              >
                 Yes, I allow camera access for progress photos (Optional)
               </Label>
               <p className="text-xs text-muted-foreground mt-1">
@@ -173,10 +184,11 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
         <CardContent className="space-y-4">
           <div className="text-sm text-muted-foreground space-y-3">
             <p>
-              By using FitForge, you agree to our Terms of Service and Privacy Policy. 
-              These documents outline how we protect your data and what you can expect from our service.
+              By using FitForge, you agree to our Terms of Service and Privacy
+              Policy. These documents outline how we protect your data and what
+              you can expect from our service.
             </p>
-            
+
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-primary/5 p-3 rounded-lg">
                 <h5 className="font-medium mb-2 flex items-center">
@@ -190,7 +202,7 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
                   <li>• Right to data deletion</li>
                 </ul>
               </div>
-              
+
               <div className="bg-primary/5 p-3 rounded-lg">
                 <h5 className="font-medium mb-2 flex items-center">
                   <Lock className="w-4 h-4 mr-1" />
@@ -204,36 +216,39 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
                 </ul>
               </div>
             </div>
-            
+
             <div className="flex space-x-4 text-xs">
-              <a 
-                href="/terms" 
-                target="_blank" 
+              <a
+                href="/terms"
+                target="_blank"
                 className="text-primary hover:underline"
               >
                 Read Full Terms of Service →
               </a>
-              <a 
-                href="/privacy" 
-                target="_blank" 
+              <a
+                href="/privacy"
+                target="_blank"
                 className="text-primary hover:underline"
               >
                 Read Privacy Policy →
               </a>
             </div>
           </div>
-          
+
           <div className="flex items-start space-x-3">
             <Checkbox
               id="terms-accepted"
               checked={data.terms_accepted || false}
-              onCheckedChange={(checked) => 
+              onCheckedChange={checked =>
                 handleInputChange('terms_accepted', checked as boolean)
               }
               className="mt-1"
             />
             <div>
-              <Label htmlFor="terms-accepted" className="cursor-pointer font-medium">
+              <Label
+                htmlFor="terms-accepted"
+                className="cursor-pointer font-medium"
+              >
                 I agree to the Terms of Service and Privacy Policy *
               </Label>
               <p className="text-xs text-muted-foreground mt-1">
@@ -241,7 +256,7 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
               </p>
             </div>
           </div>
-          
+
           {errors.terms_accepted && (
             <p className="text-sm text-destructive">{errors.terms_accepted}</p>
           )}
@@ -258,8 +273,8 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
                 🎉 You're all set! Ready to start your fitness journey.
               </p>
               <p className="text-sm">
-                Click "Complete Setup" to generate your personalized plan. 
-                This usually takes about 60 seconds.
+                Click "Complete Setup" to generate your personalized plan. This
+                usually takes about 60 seconds.
               </p>
             </div>
           </AlertDescription>
@@ -283,11 +298,12 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
               <div>
                 <p className="font-medium">AI Plan Generation</p>
                 <p className="text-muted-foreground text-xs">
-                  Our AI will create your personalized 7-day workout and meal plan
+                  Our AI will create your personalized 7-day workout and meal
+                  plan
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                 2
@@ -299,7 +315,7 @@ export function ConsentStep({ data, errors, onChange }: ConsentStepProps) {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                 3

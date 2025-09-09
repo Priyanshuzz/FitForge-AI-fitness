@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { 
+import {
   ChefHat,
   Clock,
   Flame,
@@ -18,7 +18,7 @@ import {
   Info,
   ShoppingCart,
   Timer,
-  Star
+  Star,
 } from 'lucide-react';
 import type { DisplayMeal, MealPlan } from '@/lib/types/fitness';
 
@@ -40,16 +40,21 @@ function MealCard({ meal, isCompleted, onComplete, onEdit }: MealCardProps) {
   const [showNutrition, setShowNutrition] = useState(false);
 
   return (
-    <Card className={`transition-all ${
-      isCompleted ? 'border-green-200 bg-green-50/50' : 'hover:shadow-md'
-    }`}>
+    <Card
+      className={`transition-all ${
+        isCompleted ? 'border-green-200 bg-green-50/50' : 'hover:shadow-md'
+      }`}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             {isCompleted ? (
               <CheckCircle2 className="w-6 h-6 text-green-600" />
             ) : (
-              <Circle className="w-6 h-6 text-muted-foreground cursor-pointer" onClick={onComplete} />
+              <Circle
+                className="w-6 h-6 text-muted-foreground cursor-pointer"
+                onClick={onComplete}
+              />
             )}
             <div>
               <CardTitle className="text-lg">{meal.name}</CardTitle>
@@ -58,7 +63,7 @@ function MealCard({ meal, isCompleted, onComplete, onEdit }: MealCardProps) {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Badge variant="secondary" className="text-xs">
               <Users className="w-3 h-3 mr-1" />
@@ -72,7 +77,7 @@ function MealCard({ meal, isCompleted, onComplete, onEdit }: MealCardProps) {
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         {/* Nutrition Summary */}
         <div className="grid grid-cols-4 gap-3 mb-4 p-3 bg-muted/30 rounded-lg">
@@ -98,7 +103,9 @@ function MealCard({ meal, isCompleted, onComplete, onEdit }: MealCardProps) {
         {meal.ingredients && meal.ingredients.length > 0 && (
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-medium text-sm">Ingredients ({meal.ingredients.length})</span>
+              <span className="font-medium text-sm">
+                Ingredients ({meal.ingredients.length})
+              </span>
               <Button variant="ghost" size="sm">
                 <ShoppingCart className="w-4 h-4 mr-1" />
                 Add to List
@@ -145,9 +152,13 @@ function MealCard({ meal, isCompleted, onComplete, onEdit }: MealCardProps) {
               </>
             )}
           </div>
-          
+
           <div className="flex space-x-2">
-            <Button variant="ghost" size="sm" onClick={() => setShowNutrition(!showNutrition)}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowNutrition(!showNutrition)}
+            >
               <Info className="w-4 h-4 mr-1" />
               Details
             </Button>
@@ -185,7 +196,7 @@ function MealCard({ meal, isCompleted, onComplete, onEdit }: MealCardProps) {
                 <span>{meal.saturated_fat || 0}g</span>
               </div>
             </div>
-            
+
             {meal.ingredients && (
               <div>
                 <h4 className="font-medium mb-2">Complete Ingredients</h4>
@@ -193,13 +204,15 @@ function MealCard({ meal, isCompleted, onComplete, onEdit }: MealCardProps) {
                   {meal.ingredients.map((ingredient, index) => (
                     <div key={index} className="flex justify-between text-sm">
                       <span>{ingredient.name}</span>
-                      <span>{ingredient.amount} {ingredient.unit}</span>
+                      <span>
+                        {ingredient.amount} {ingredient.unit}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            
+
             {meal.instructions && (
               <div>
                 <h4 className="font-medium mb-2">Instructions</h4>
@@ -215,30 +228,48 @@ function MealCard({ meal, isCompleted, onComplete, onEdit }: MealCardProps) {
   );
 }
 
-export function MealPlanDisplay({ mealPlan, date, onMealComplete, onAddCustomMeal }: MealPlanDisplayProps) {
+export function MealPlanDisplay({
+  mealPlan,
+  date,
+  onMealComplete,
+  onAddCustomMeal,
+}: MealPlanDisplayProps) {
   const [completedMeals, setCompletedMeals] = useState<Set<string>>(new Set());
-  
+
   const handleMealComplete = (mealId: string) => {
     setCompletedMeals(prev => new Set([...prev, mealId]));
     onMealComplete?.(mealId);
   };
 
-  const totalCalories = mealPlan.meals.reduce((total, meal) => total + meal.calories, 0);
-  const totalProtein = mealPlan.meals.reduce((total, meal) => total + meal.protein, 0);
-  const totalCarbs = mealPlan.meals.reduce((total, meal) => total + meal.carbs, 0);
+  const totalCalories = mealPlan.meals.reduce(
+    (total, meal) => total + meal.calories,
+    0
+  );
+  const totalProtein = mealPlan.meals.reduce(
+    (total, meal) => total + meal.protein,
+    0
+  );
+  const totalCarbs = mealPlan.meals.reduce(
+    (total, meal) => total + meal.carbs,
+    0
+  );
   const totalFat = mealPlan.meals.reduce((total, meal) => total + meal.fat, 0);
-  
+
   const completedCount = completedMeals.size;
   const totalMeals = mealPlan.meals.length;
-  const completionPercentage = totalMeals > 0 ? (completedCount / totalMeals) * 100 : 0;
+  const completionPercentage =
+    totalMeals > 0 ? (completedCount / totalMeals) * 100 : 0;
 
-  const mealsByType = mealPlan.meals.reduce((acc, meal) => {
-    if (!acc[meal.meal_type]) {
-      acc[meal.meal_type] = [];
-    }
-    acc[meal.meal_type].push(meal);
-    return acc;
-  }, {} as Record<string, DisplayMeal[]>);
+  const mealsByType = mealPlan.meals.reduce(
+    (acc, meal) => {
+      if (!acc[meal.meal_type]) {
+        acc[meal.meal_type] = [];
+      }
+      acc[meal.meal_type].push(meal);
+      return acc;
+    },
+    {} as Record<string, DisplayMeal[]>
+  );
 
   return (
     <div className="space-y-6">
@@ -247,13 +278,15 @@ export function MealPlanDisplay({ mealPlan, date, onMealComplete, onAddCustomMea
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl font-bold">Today's Meal Plan</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                Today's Meal Plan
+              </CardTitle>
               <p className="text-muted-foreground mt-1">
-                {new Date(date).toLocaleDateString('en-US', { 
+                {new Date(date).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
-                  day: 'numeric'
+                  day: 'numeric',
                 })}
               </p>
             </div>
@@ -278,28 +311,36 @@ export function MealPlanDisplay({ mealPlan, date, onMealComplete, onAddCustomMea
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-primary/5 rounded-lg">
-              <div className="text-2xl font-bold text-primary">{totalCalories}</div>
+              <div className="text-2xl font-bold text-primary">
+                {totalCalories}
+              </div>
               <div className="text-sm text-muted-foreground">Calories</div>
               <div className="text-xs text-muted-foreground mt-1">
                 Target: {mealPlan.target_calories || 2000}
               </div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{Math.round(totalProtein)}g</div>
+              <div className="text-2xl font-bold text-green-600">
+                {Math.round(totalProtein)}g
+              </div>
               <div className="text-sm text-muted-foreground">Protein</div>
               <div className="text-xs text-muted-foreground mt-1">
                 Target: {mealPlan.target_protein || 150}g
               </div>
             </div>
             <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{Math.round(totalCarbs)}g</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {Math.round(totalCarbs)}g
+              </div>
               <div className="text-sm text-muted-foreground">Carbs</div>
               <div className="text-xs text-muted-foreground mt-1">
                 Target: {mealPlan.target_carbs || 200}g
               </div>
             </div>
             <div className="text-center p-4 bg-orange-50 rounded-lg">
-              <div className="text-2xl font-bold text-orange-600">{Math.round(totalFat)}g</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {Math.round(totalFat)}g
+              </div>
               <div className="text-sm text-muted-foreground">Fat</div>
               <div className="text-xs text-muted-foreground mt-1">
                 Target: {mealPlan.target_fat || 80}g
@@ -318,7 +359,7 @@ export function MealPlanDisplay({ mealPlan, date, onMealComplete, onAddCustomMea
           <TabsTrigger value="dinner">Dinner</TabsTrigger>
           <TabsTrigger value="snack">Snacks</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="all" className="space-y-4 mt-6">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold">All Meals ({totalMeals})</h3>
@@ -327,9 +368,9 @@ export function MealPlanDisplay({ mealPlan, date, onMealComplete, onAddCustomMea
               Add Custom Meal
             </Button>
           </div>
-          
+
           <div className="space-y-4">
-            {mealPlan.meals.map((meal) => (
+            {mealPlan.meals.map(meal => (
               <MealCard
                 key={meal.id}
                 meal={meal}
@@ -339,9 +380,13 @@ export function MealPlanDisplay({ mealPlan, date, onMealComplete, onAddCustomMea
             ))}
           </div>
         </TabsContent>
-        
+
         {Object.entries(mealsByType).map(([mealType, meals]) => (
-          <TabsContent key={mealType} value={mealType} className="space-y-4 mt-6">
+          <TabsContent
+            key={mealType}
+            value={mealType}
+            className="space-y-4 mt-6"
+          >
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold capitalize">
                 {mealType} ({meals.length})
@@ -351,9 +396,9 @@ export function MealPlanDisplay({ mealPlan, date, onMealComplete, onAddCustomMea
                 Add {mealType}
               </Button>
             </div>
-            
+
             <div className="space-y-4">
-              {meals.map((meal) => (
+              {meals.map(meal => (
                 <MealCard
                   key={meal.id}
                   meal={meal}
@@ -376,12 +421,12 @@ export function MealPlanDisplay({ mealPlan, date, onMealComplete, onAddCustomMea
             </span>
           </div>
           <div className="w-full bg-muted rounded-full h-2">
-            <div 
+            <div
               className="bg-green-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${completionPercentage}%` }}
             />
           </div>
-          
+
           {completionPercentage === 100 && (
             <div className="text-center mt-4">
               <div className="text-lg font-semibold text-green-600 mb-2">

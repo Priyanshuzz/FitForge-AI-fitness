@@ -6,13 +6,17 @@ test.describe('Authentication Flow', () => {
       await page.goto('/auth/register');
 
       // Check if form elements are present
-      await expect(page.getByRole('heading', { name: /Join FitForge AI/i })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: /Join FitForge AI/i })
+      ).toBeVisible();
       await expect(page.getByLabel(/First Name/i)).toBeVisible();
       await expect(page.getByLabel(/Last Name/i)).toBeVisible();
       await expect(page.getByLabel(/Email Address/i)).toBeVisible();
       await expect(page.getByLabel('Password')).toBeVisible();
       await expect(page.getByLabel(/Confirm Password/i)).toBeVisible();
-      await expect(page.getByRole('button', { name: /Create Account/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Create Account/i })
+      ).toBeVisible();
     });
 
     test('should validate form inputs', async ({ page }) => {
@@ -24,7 +28,9 @@ test.describe('Authentication Flow', () => {
       // Browser validation should prevent submission
       // Check if required field validation is working
       await expect(page.getByLabel(/First Name/i)).toHaveAttribute('required');
-      await expect(page.getByLabel(/Email Address/i)).toHaveAttribute('required');
+      await expect(page.getByLabel(/Email Address/i)).toHaveAttribute(
+        'required'
+      );
     });
 
     test('should show password requirements', async ({ page }) => {
@@ -77,26 +83,36 @@ test.describe('Authentication Flow', () => {
       await page.goto('/auth/login');
 
       // Check if form elements are present
-      await expect(page.getByRole('heading', { name: /Welcome Back/i })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: /Welcome Back/i })
+      ).toBeVisible();
       await expect(page.getByLabel(/Email Address/i)).toBeVisible();
       await expect(page.getByLabel('Password')).toBeVisible();
-      await expect(page.getByRole('button', { name: /Sign In/i })).toBeVisible();
-      await expect(page.getByRole('button', { name: /Continue with Google/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Sign In/i })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Continue with Google/i })
+      ).toBeVisible();
     });
 
     test('should toggle password visibility', async ({ page }) => {
       await page.goto('/auth/login');
 
       const passwordField = page.getByLabel('Password');
-      const toggleButton = page.getByRole('button').filter({ has: page.locator('[data-testid=\"eye-icon\"], .lucide-eye, .lucide-eye-off') });
+      const toggleButton = page.getByRole('button').filter({
+        has: page.locator(
+          '[data-testid=\"eye-icon\"], .lucide-eye, .lucide-eye-off'
+        ),
+      });
 
       // Initially password should be hidden
       await expect(passwordField).toHaveAttribute('type', 'password');
 
       // Click toggle button
-      if (await toggleButton.count() > 0) {
+      if ((await toggleButton.count()) > 0) {
         await toggleButton.first().click();
-        
+
         // Password should now be visible
         await expect(passwordField).toHaveAttribute('type', 'text');
       }
@@ -126,7 +142,9 @@ test.describe('Authentication Flow', () => {
       await page.goto('/auth/login');
 
       // Check if forgot password link is present
-      await expect(page.getByRole('link', { name: /Forgot password/i })).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: /Forgot password/i })
+      ).toBeVisible();
     });
 
     test('should show remember me checkbox', async ({ page }) => {
@@ -175,10 +193,14 @@ test.describe('Authentication Flow', () => {
       await page.goto('/auth/login');
 
       // Check if form is still usable on mobile
-      await expect(page.getByRole('heading', { name: /Welcome Back/i })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: /Welcome Back/i })
+      ).toBeVisible();
       await expect(page.getByLabel(/Email Address/i)).toBeVisible();
       await expect(page.getByLabel('Password')).toBeVisible();
-      await expect(page.getByRole('button', { name: /Sign In/i })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: /Sign In/i })
+      ).toBeVisible();
     });
 
     test('should be responsive on tablet', async ({ page }) => {
@@ -188,7 +210,9 @@ test.describe('Authentication Flow', () => {
       await page.goto('/auth/register');
 
       // Check if form layout works on tablet
-      await expect(page.getByRole('heading', { name: /Join FitForge AI/i })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: /Join FitForge AI/i })
+      ).toBeVisible();
       await expect(page.getByLabel(/First Name/i)).toBeVisible();
       await expect(page.getByLabel(/Last Name/i)).toBeVisible();
     });

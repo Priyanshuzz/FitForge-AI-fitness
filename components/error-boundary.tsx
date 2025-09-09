@@ -30,26 +30,27 @@ export class ErrorBoundary extends Component<Props, State> {
     return {
       hasError: true,
       error,
-      errorId: `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      errorId: `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log the error
     const errorId = this.state.errorId || 'unknown';
-    
+
     reportError(error, {
       ...errorInfo,
       errorId,
-      userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'unknown',
+      userAgent:
+        typeof window !== 'undefined' ? window.navigator.userAgent : 'unknown',
       url: typeof window !== 'undefined' ? window.location.href : 'unknown',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     // Update state with error info
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
 
     // Call custom error handler if provided
@@ -60,7 +61,7 @@ export class ErrorBoundary extends Component<Props, State> {
     logger.error('React Error Boundary caught an error', error, {
       errorId,
       componentStack: errorInfo.componentStack,
-      errorBoundary: 'ErrorBoundary'
+      errorBoundary: 'ErrorBoundary',
     });
   }
 
@@ -70,7 +71,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private handleReportBug = () => {
     const { error, errorInfo, errorId } = this.state;
-    
+
     // Create a bug report
     const bugReport = {
       errorId,
@@ -79,16 +80,20 @@ export class ErrorBoundary extends Component<Props, State> {
       componentStack: errorInfo?.componentStack,
       userAgent: navigator.userAgent,
       url: window.location.href,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // You could send this to your bug tracking system
     console.log('Bug Report:', bugReport);
-    
+
     // For now, copy to clipboard
-    navigator.clipboard.writeText(JSON.stringify(bugReport, null, 2)).then(() => {
-      alert('Bug report copied to clipboard! Please paste it in your bug report.');
-    });
+    navigator.clipboard
+      .writeText(JSON.stringify(bugReport, null, 2))
+      .then(() => {
+        alert(
+          'Bug report copied to clipboard! Please paste it in your bug report.'
+        );
+      });
   };
 
   render() {
@@ -113,10 +118,14 @@ export class ErrorBoundary extends Component<Props, State> {
             <CardContent className="space-y-6">
               <div className="text-center text-muted-foreground">
                 <p className="mb-2">
-                  We're sorry, but something unexpected happened. Our team has been notified and is working on a fix.
+                  We're sorry, but something unexpected happened. Our team has
+                  been notified and is working on a fix.
                 </p>
                 <p className="text-sm">
-                  Error ID: <code className="bg-muted px-2 py-1 rounded text-xs">{this.state.errorId}</code>
+                  Error ID:{' '}
+                  <code className="bg-muted px-2 py-1 rounded text-xs">
+                    {this.state.errorId}
+                  </code>
                 </p>
               </div>
 
@@ -156,11 +165,19 @@ export class ErrorBoundary extends Component<Props, State> {
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Try Again
                 </Button>
-                <Button variant="outline" onClick={() => window.location.href = '/'} className="flex-1">
+                <Button
+                  variant="outline"
+                  onClick={() => (window.location.href = '/')}
+                  className="flex-1"
+                >
                   <Home className="w-4 h-4 mr-2" />
                   Go Home
                 </Button>
-                <Button variant="outline" onClick={this.handleReportBug} className="flex-1">
+                <Button
+                  variant="outline"
+                  onClick={this.handleReportBug}
+                  className="flex-1"
+                >
                   <Bug className="w-4 h-4 mr-2" />
                   Report Bug
                 </Button>
@@ -169,7 +186,10 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="text-center text-sm text-muted-foreground">
                 <p>
                   If this problem persists, please contact our support team at{' '}
-                  <a href="mailto:support@fitforge.ai" className="text-primary hover:underline">
+                  <a
+                    href="mailto:support@fitforge.ai"
+                    className="text-primary hover:underline"
+                  >
                     support@fitforge.ai
                   </a>
                 </p>
@@ -185,26 +205,29 @@ export class ErrorBoundary extends Component<Props, State> {
 }
 
 // Simplified error boundary for specific components
-export function SimpleErrorBoundary({ 
-  children, 
-  fallback 
-}: { 
-  children: ReactNode; 
-  fallback?: ReactNode; 
+export function SimpleErrorBoundary({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
-    <ErrorBoundary 
-      fallback={fallback || (
-        <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-          <div className="flex items-center space-x-2 text-red-800">
-            <AlertTriangle className="h-5 w-5" />
-            <span className="font-medium">Something went wrong</span>
+    <ErrorBoundary
+      fallback={
+        fallback || (
+          <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+            <div className="flex items-center space-x-2 text-red-800">
+              <AlertTriangle className="h-5 w-5" />
+              <span className="font-medium">Something went wrong</span>
+            </div>
+            <p className="text-sm text-red-600 mt-1">
+              Please try refreshing the page or contact support if the issue
+              persists.
+            </p>
           </div>
-          <p className="text-sm text-red-600 mt-1">
-            Please try refreshing the page or contact support if the issue persists.
-          </p>
-        </div>
-      )}
+        )
+      }
     >
       {children}
     </ErrorBoundary>

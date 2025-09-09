@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Trophy,
   Target,
   Flame,
@@ -12,7 +12,7 @@ import {
   Star,
   Zap,
   Crown,
-  Medal
+  Medal,
 } from 'lucide-react';
 import { UserAnalytics } from '@/lib/types/fitness';
 
@@ -43,7 +43,7 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
       bgColor: 'bg-yellow-100',
       achieved: (analytics?.total_workouts_completed || 0) >= 1,
       progress: Math.min(analytics?.total_workouts_completed || 0, 1),
-      target: 1
+      target: 1,
     },
     {
       id: 'workout_streak',
@@ -54,7 +54,7 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
       bgColor: 'bg-orange-100',
       achieved: (analytics?.streak_days || 0) >= 7,
       progress: analytics?.streak_days || 0,
-      target: 7
+      target: 7,
     },
     {
       id: 'workout_milestone',
@@ -65,7 +65,7 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
       bgColor: 'bg-blue-100',
       achieved: (analytics?.total_workouts_completed || 0) >= 50,
       progress: analytics?.total_workouts_completed || 0,
-      target: 50
+      target: 50,
     },
     {
       id: 'plan_adherence',
@@ -76,7 +76,7 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
       bgColor: 'bg-green-100',
       achieved: (analytics?.plan_adherence_percentage || 0) >= 80,
       progress: analytics?.plan_adherence_percentage || 0,
-      target: 80
+      target: 80,
     },
     {
       id: 'meal_logger',
@@ -87,7 +87,7 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
       bgColor: 'bg-purple-100',
       achieved: (analytics?.total_meals_logged || 0) >= 100,
       progress: analytics?.total_meals_logged || 0,
-      target: 100
+      target: 100,
     },
     {
       id: 'weight_loss',
@@ -98,7 +98,7 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
       bgColor: 'bg-pink-100',
       achieved: Math.abs(analytics?.weight_change_kg || 0) >= 5,
       progress: Math.abs(analytics?.weight_change_kg || 0),
-      target: 5
+      target: 5,
     },
     {
       id: 'highly_rated',
@@ -109,7 +109,7 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
       bgColor: 'bg-yellow-100',
       achieved: (analytics?.average_workout_rating || 0) >= 4,
       progress: analytics?.average_workout_rating || 0,
-      target: 4
+      target: 4,
     },
     {
       id: 'long_streak',
@@ -120,12 +120,14 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
       bgColor: 'bg-indigo-100',
       achieved: (analytics?.streak_days || 0) >= 30,
       progress: analytics?.streak_days || 0,
-      target: 30
-    }
+      target: 30,
+    },
   ];
 
   const achievedCount = achievements.filter(a => a.achieved).length;
-  const completionRate = Math.round((achievedCount / achievements.length) * 100);
+  const completionRate = Math.round(
+    (achievedCount / achievements.length) * 100
+  );
 
   return (
     <div className="space-y-6">
@@ -141,14 +143,14 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
         <div className="text-sm text-muted-foreground">
           {completionRate}% Complete
         </div>
-        
+
         {/* Progress Bar */}
         <div className="w-full bg-muted rounded-full h-2 mt-3">
-          <motion.div 
+          <motion.div
             className="bg-primary h-2 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${completionRate}%` }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 1, ease: 'easeOut' }}
           />
         </div>
       </div>
@@ -162,32 +164,36 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
             className={`relative p-4 rounded-lg border transition-all cursor-pointer group ${
-              achievement.achieved 
-                ? `${achievement.bgColor} border-current shadow-sm` 
+              achievement.achieved
+                ? `${achievement.bgColor} border-current shadow-sm`
                 : 'bg-muted/30 border-muted'
             }`}
           >
             <div className="text-center space-y-2">
-              <div className={`inline-flex p-2 rounded-full ${
-                achievement.achieved 
-                  ? achievement.bgColor 
-                  : 'bg-muted'
-              }`}>
-                <div className={
-                  achievement.achieved 
-                    ? achievement.color 
-                    : 'text-muted-foreground'
-                }>
+              <div
+                className={`inline-flex p-2 rounded-full ${
+                  achievement.achieved ? achievement.bgColor : 'bg-muted'
+                }`}
+              >
+                <div
+                  className={
+                    achievement.achieved
+                      ? achievement.color
+                      : 'text-muted-foreground'
+                  }
+                >
                   {achievement.icon}
                 </div>
               </div>
-              
+
               <div>
-                <h5 className={`font-medium text-sm ${
-                  achievement.achieved 
-                    ? achievement.color 
-                    : 'text-muted-foreground'
-                }`}>
+                <h5
+                  className={`font-medium text-sm ${
+                    achievement.achieved
+                      ? achievement.color
+                      : 'text-muted-foreground'
+                  }`}
+                >
                   {achievement.title}
                 </h5>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -196,28 +202,30 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
               </div>
 
               {/* Progress indicator for unachieved badges */}
-              {!achievement.achieved && achievement.progress !== undefined && achievement.target && (
-                <div className="space-y-1">
-                  <div className="text-xs font-medium">
-                    {achievement.progress}/{achievement.target}
+              {!achievement.achieved &&
+                achievement.progress !== undefined &&
+                achievement.target && (
+                  <div className="space-y-1">
+                    <div className="text-xs font-medium">
+                      {achievement.progress}/{achievement.target}
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-1">
+                      <div
+                        className="bg-primary h-1 rounded-full transition-all"
+                        style={{
+                          width: `${Math.min((achievement.progress / achievement.target) * 100, 100)}%`,
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-muted rounded-full h-1">
-                    <div 
-                      className="bg-primary h-1 rounded-full transition-all"
-                      style={{ 
-                        width: `${Math.min((achievement.progress / achievement.target) * 100, 100)}%` 
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
+                )}
 
               {/* Achievement Badge */}
               {achievement.achieved && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ delay: 0.3, type: "spring" }}
+                  transition={{ delay: 0.3, type: 'spring' }}
                   className="absolute -top-2 -right-2"
                 >
                   <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
@@ -248,10 +256,9 @@ export function AchievementsBadges({ analytics }: AchievementsBadgesProps) {
             <div>
               <h5 className="font-medium">Keep Going!</h5>
               <p className="text-sm text-muted-foreground">
-                {achievedCount === achievements.length 
+                {achievedCount === achievements.length
                   ? "You've achieved everything! Amazing work! 🏆"
-                  : `${achievements.length - achievedCount} more achievement${achievements.length - achievedCount > 1 ? 's' : ''} to unlock`
-                }
+                  : `${achievements.length - achievedCount} more achievement${achievements.length - achievedCount > 1 ? 's' : ''} to unlock`}
               </p>
             </div>
           </div>

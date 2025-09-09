@@ -5,6 +5,7 @@
 ### Backend Testing Framework
 
 #### Unit Tests (Spring Boot)
+
 ```java
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -18,10 +19,10 @@ class UserServiceTest {
         UserRegistrationDto dto = new UserRegistrationDto();
         dto.setEmail("test@example.com");
         dto.setPassword("password123");
-        
+
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
-        
+
         // When & Then
         assertDoesNotThrow(() -> userService.createUser(dto));
         verify(userRepository).save(any(User.class));
@@ -39,9 +40,9 @@ class PlanGenerationServiceTest {
         // Test plan generation logic
         IntakeForm form = createSampleIntakeForm();
         PlanData mockData = createMockPlanData();
-        
+
         when(llmService.generateWeeklyPlan(form)).thenReturn(mockData);
-        
+
         // Verify plan creation
         assertNotNull(service.processPlanGeneration(createJob()));
     }
@@ -49,6 +50,7 @@ class PlanGenerationServiceTest {
 ```
 
 #### Integration Tests
+
 ```java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -63,10 +65,10 @@ class AuthControllerIntegrationTest {
         UserRegistrationDto dto = new UserRegistrationDto();
         dto.setEmail("test@example.com");
         dto.setPassword("SecurePass123");
-        
+
         ResponseEntity<AuthResponse> response = restTemplate.postForEntity(
             "/api/auth/register", dto, AuthResponse.class);
-        
+
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody().getAccessToken());
     }
@@ -76,23 +78,24 @@ class AuthControllerIntegrationTest {
 ### Frontend Testing (Flutter)
 
 #### Widget Tests
+
 ```dart
 // test/widgets/intake_form_test.dart
 void main() {
   group('IntakeFormPage', () {
     testWidgets('displays personal info step initially', (tester) async {
       await tester.pumpWidget(MaterialApp(home: IntakeFormPage()));
-      
+
       expect(find.text('Personal Information'), findsOneWidget);
       expect(find.text('Step 1 of 6'), findsOneWidget);
     });
 
     testWidgets('validates required fields', (tester) async {
       await tester.pumpWidget(MaterialApp(home: IntakeFormPage()));
-      
+
       await tester.tap(find.text('Next'));
       await tester.pump();
-      
+
       expect(find.text('This field is required'), findsWidgets);
     });
   });
@@ -100,6 +103,7 @@ void main() {
 ```
 
 #### BLoC Tests
+
 ```dart
 // test/blocs/auth_bloc_test.dart
 import 'package:bloc_test/bloc_test.dart';
@@ -107,7 +111,7 @@ import 'package:bloc_test/bloc_test.dart';
 void main() {
   group('AuthBloc', () {
     late MockAuthRepository mockRepository;
-    
+
     setUp(() => mockRepository = MockAuthRepository());
 
     blocTest<AuthBloc, AuthState>(
@@ -125,6 +129,7 @@ void main() {
 ```
 
 ### Testing Checklist
+
 - [ ] Unit tests: 80%+ coverage for services
 - [ ] Integration tests: All API endpoints
 - [ ] Widget tests: Critical UI components
@@ -140,6 +145,7 @@ void main() {
 ### Docker Setup
 
 #### Backend Dockerfile
+
 ```dockerfile
 FROM openjdk:17-jdk-alpine AS build
 WORKDIR /app
@@ -158,6 +164,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
 #### Docker Compose (Development)
+
 ```yaml
 # docker-compose.yml
 version: '3.8'
@@ -169,20 +176,20 @@ services:
       MYSQL_DATABASE: fitforge
       MYSQL_USER: fitforge
       MYSQL_PASSWORD: password
-    ports: ["3306:3306"]
+    ports: ['3306:3306']
     volumes: [mysql_data:/var/lib/mysql]
 
   redis:
     image: redis:7-alpine
     command: redis-server --requirepass password
-    ports: ["6379:6379"]
+    ports: ['6379:6379']
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
     environment:
       RABBITMQ_DEFAULT_USER: fitforge
       RABBITMQ_DEFAULT_PASS: password
-    ports: ["5672:5672", "15672:15672"]
+    ports: ['5672:5672', '15672:15672']
 
   backend:
     build: .
@@ -191,7 +198,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/fitforge
       SPRING_REDIS_HOST: redis
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-    ports: ["8080:8080"]
+    ports: ['8080:8080']
     depends_on: [mysql, redis, rabbitmq]
 
 volumes:
@@ -201,6 +208,7 @@ volumes:
 ### CI/CD Pipeline (GitHub Actions)
 
 #### Backend Pipeline
+
 ```yaml
 # .github/workflows/backend.yml
 name: Backend CI/CD
@@ -219,33 +227,34 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: test
         ports: [3306:3306]
-    
+
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    
-    - name: Run tests
-      run: ./gradlew test
-      
-    - name: Upload coverage
-      uses: codecov/codecov-action@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
 
   deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - name: Build and push Docker image
-      run: |
-        docker build -t fitforge-backend:${{ github.sha }} .
-        docker push fitforge-backend:${{ github.sha }}
+      - name: Build and push Docker image
+        run: |
+          docker build -t fitforge-backend:${{ github.sha }} .
+          docker push fitforge-backend:${{ github.sha }}
 ```
 
 #### Frontend Pipeline
+
 ```yaml
 # .github/workflows/frontend.yml
 name: Frontend CI/CD
@@ -257,31 +266,32 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.16.0'
-    
-    - name: Get dependencies
-      run: flutter pub get
-      
-    - name: Run tests
-      run: flutter test --coverage
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test --coverage
 
   build-android:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - name: Build APK
-      run: flutter build apk --release
-      
-    - name: Upload to Play Store
-      # Add Play Store deployment
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload to Play Store
+        # Add Play Store deployment
 ```
 
 ### Production Deployment
 
 #### Kubernetes Manifests
+
 ```yaml
 # k8s/backend-deployment.yml
 apiVersion: apps/v1
@@ -299,37 +309,37 @@ spec:
         app: fitforge-backend
     spec:
       containers:
-      - name: backend
-        image: fitforge-backend:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: SPRING_PROFILES_ACTIVE
-          value: "production"
-        - name: SPRING_DATASOURCE_URL
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: url
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 8080
-          initialDelaySeconds: 60
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /actuator/health/readiness
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
+        - name: backend
+          image: fitforge-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: 'production'
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: url
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
 
 ---
 apiVersion: v1
@@ -340,14 +350,15 @@ spec:
   selector:
     app: fitforge-backend
   ports:
-  - port: 80
-    targetPort: 8080
+    - port: 80
+      targetPort: 8080
   type: LoadBalancer
 ```
 
 ### Infrastructure as Code (Terraform)
 
 #### AWS Infrastructure
+
 ```hcl
 # infrastructure/main.tf
 provider "aws" {
@@ -359,7 +370,7 @@ resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
-  
+
   tags = {
     Name = "fitforge-vpc"
   }
@@ -390,30 +401,30 @@ resource "aws_eks_cluster" "fitforge" {
 # RDS MySQL
 resource "aws_db_instance" "fitforge" {
   identifier = "fitforge-db"
-  
+
   engine         = "mysql"
   engine_version = "8.0"
   instance_class = "db.t3.micro"
-  
+
   allocated_storage     = 20
   max_allocated_storage = 100
   storage_type          = "gp2"
   storage_encrypted     = true
-  
+
   db_name  = "fitforge"
   username = var.db_username
   password = var.db_password
-  
+
   vpc_security_group_ids = [aws_security_group.rds.id]
   db_subnet_group_name   = aws_db_subnet_group.fitforge.name
-  
+
   backup_retention_period = 7
   backup_window          = "03:00-04:00"
   maintenance_window     = "sun:04:00-sun:05:00"
-  
+
   skip_final_snapshot = false
   final_snapshot_identifier = "fitforge-final-snapshot"
-  
+
   tags = {
     Name = "fitforge-database"
   }
@@ -428,18 +439,18 @@ resource "aws_elasticache_subnet_group" "fitforge" {
 resource "aws_elasticache_replication_group" "fitforge" {
   replication_group_id       = "fitforge-redis"
   description               = "Redis for FitForge"
-  
+
   node_type                 = "cache.t3.micro"
   port                      = 6379
   parameter_group_name      = "default.redis7"
-  
+
   num_cache_clusters        = 2
   automatic_failover_enabled = true
   multi_az_enabled          = true
-  
+
   subnet_group_name = aws_elasticache_subnet_group.fitforge.name
   security_group_ids = [aws_security_group.redis.id]
-  
+
   at_rest_encryption_enabled = true
   transit_encryption_enabled = true
   auth_token                = var.redis_auth_token
@@ -449,6 +460,7 @@ resource "aws_elasticache_replication_group" "fitforge" {
 ### Environment Configuration
 
 #### Production Application Properties
+
 ```yaml
 # application-production.yml
 spring:
@@ -507,7 +519,7 @@ logging:
     com.fitforge: INFO
     org.springframework.security: WARN
   pattern:
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
   file:
     name: /app/logs/fitforge.log
     max-size: 100MB
@@ -516,15 +528,15 @@ logging:
 app:
   jwt:
     secret: ${JWT_SECRET}
-    expiration: 86400000  # 24 hours
-    refresh-expiration: 2592000000  # 30 days
-  
+    expiration: 86400000 # 24 hours
+    refresh-expiration: 2592000000 # 30 days
+
   openai:
     api-key: ${OPENAI_API_KEY}
     api-url: https://api.openai.com/v1
     model: gpt-4
     max-tokens: 4000
-    
+
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 ```
@@ -532,6 +544,7 @@ app:
 ### Monitoring & Observability
 
 #### Prometheus Configuration
+
 ```yaml
 # monitoring/prometheus.yml
 global:
@@ -554,6 +567,7 @@ scrape_configs:
 ```
 
 #### Grafana Dashboard
+
 ```json
 {
   "dashboard": {
@@ -571,7 +585,7 @@ scrape_configs:
       },
       {
         "title": "Response Time",
-        "type": "graph", 
+        "type": "graph",
         "targets": [
           {
             "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
@@ -587,6 +601,7 @@ scrape_configs:
 ### Security Configuration
 
 #### SSL/TLS Setup (Let's Encrypt)
+
 ```nginx
 # nginx/nginx.conf
 server {
@@ -601,7 +616,7 @@ server {
 
     ssl_certificate /etc/letsencrypt/live/api.fitforge.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/api.fitforge.com/privkey.pem;
-    
+
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
     ssl_prefer_server_ciphers off;
@@ -619,6 +634,7 @@ server {
 ### Deployment Checklist
 
 #### Pre-deployment
+
 - [ ] Run all tests (unit, integration, e2e)
 - [ ] Security scan (OWASP ZAP, SonarQube)
 - [ ] Performance testing (load testing)
@@ -628,6 +644,7 @@ server {
 - [ ] Monitoring alerts configured
 
 #### Post-deployment
+
 - [ ] Health checks passing
 - [ ] Logs flowing correctly
 - [ ] Metrics being collected
@@ -638,6 +655,7 @@ server {
 - [ ] Mobile app can connect to API
 
 #### Rollback Plan
+
 1. Keep previous Docker images tagged
 2. Database rollback scripts ready
 3. DNS failover configured

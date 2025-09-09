@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import {
   Calendar,
   Clock,
   Target,
@@ -17,7 +17,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Play,
-  CheckCircle2
+  CheckCircle2,
 } from 'lucide-react';
 import { WorkoutDisplay } from './workout-display';
 import { MealPlanDisplay } from './meal-plan-display';
@@ -32,22 +32,32 @@ interface DailyPlanViewProps {
   onMealComplete?: (mealId: string) => void;
 }
 
-const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAYS_OF_WEEK = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
 
-export function DailyPlanView({ 
-  plan, 
-  dayIndex, 
-  onBack, 
-  onDayChange, 
+export function DailyPlanView({
+  plan,
+  dayIndex,
+  onBack,
+  onDayChange,
   onWorkoutComplete,
-  onMealComplete 
+  onMealComplete,
 }: DailyPlanViewProps) {
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'workout' | 'nutrition'>('overview');
-  
+  const [selectedTab, setSelectedTab] = useState<
+    'overview' | 'workout' | 'nutrition'
+  >('overview');
+
   const currentWeek = Math.floor(dayIndex / 7);
   const dayInWeek = dayIndex % 7;
   const planDay = plan.weeks[currentWeek]?.days[dayInWeek];
-  
+
   if (!planDay) {
     return (
       <div className="text-center py-12">
@@ -60,7 +70,7 @@ export function DailyPlanView({
   }
 
   const canGoPrevious = dayIndex > 0;
-  const canGoNext = dayIndex < (plan.weeks.length * 7) - 1;
+  const canGoNext = dayIndex < plan.weeks.length * 7 - 1;
 
   const handlePreviousDay = () => {
     if (canGoPrevious) {
@@ -82,17 +92,16 @@ export function DailyPlanView({
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Plan
         </Button>
-        
         <div className="flex items-center space-x-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={handlePreviousDay}
             disabled={!canGoPrevious}
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
-          
+
           <div className="text-center">
             <h2 className="text-xl font-bold">
               {DAYS_OF_WEEK[dayInWeek]} - Day {dayIndex + 1}
@@ -101,9 +110,9 @@ export function DailyPlanView({
               Week {currentWeek + 1} • {planDay.date}
             </p>
           </div>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             size="sm"
             onClick={handleNextDay}
             disabled={!canGoNext}
@@ -111,18 +120,19 @@ export function DailyPlanView({
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
-        
         <div className="w-24" /> {/* Spacer for balance */}
       </div>
 
       {/* Day Status & Quick Stats */}
-      <Card className={`${
-        planDay.completed 
-          ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200' 
-          : planDay.is_rest_day 
-            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
-            : 'bg-gradient-to-r from-primary/5 to-secondary/5'
-      }`}>
+      <Card
+        className={`${
+          planDay.completed
+            ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
+            : planDay.is_rest_day
+              ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+              : 'bg-gradient-to-r from-primary/5 to-secondary/5'
+        }`}
+      >
         <CardContent className="pt-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
@@ -133,7 +143,7 @@ export function DailyPlanView({
               ) : (
                 <Target className="w-8 h-8 text-primary" />
               )}
-              
+
               <div>
                 <h3 className="text-xl font-bold">
                   {planDay.is_rest_day ? 'Rest Day' : 'Training Day'}
@@ -143,7 +153,7 @@ export function DailyPlanView({
                 </p>
               </div>
             </div>
-            
+
             <div className="flex space-x-4">
               {planDay.workout && (
                 <div className="text-center">
@@ -153,15 +163,18 @@ export function DailyPlanView({
                   <div className="text-sm text-muted-foreground">Exercises</div>
                 </div>
               )}
-              
+
               <div className="text-center">
                 <div className="text-2xl font-bold text-orange-600">
-                  {(planDay.workout?.estimated_calories || 0) + 
-                   (planDay.meals?.reduce((sum, meal) => sum + meal.calories, 0) || 0)}
+                  {(planDay.workout?.estimated_calories || 0) +
+                    (planDay.meals?.reduce(
+                      (sum, meal) => sum + meal.calories,
+                      0
+                    ) || 0)}
                 </div>
                 <div className="text-sm text-muted-foreground">Total Cal</div>
               </div>
-              
+
               {planDay.meals && (
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">
@@ -172,13 +185,13 @@ export function DailyPlanView({
               )}
             </div>
           </div>
-          
+
           {planDay.is_rest_day && (
             <div className="bg-blue-50 p-4 rounded-lg">
               <h4 className="font-medium mb-2">🧘‍♀️ Rest Day Activities</h4>
               <p className="text-sm text-muted-foreground">
-                Take time to recover with light stretching, walking, or meditation. 
-                Your body grows stronger during rest!
+                Take time to recover with light stretching, walking, or
+                meditation. Your body grows stronger during rest!
               </p>
             </div>
           )}
@@ -186,7 +199,10 @@ export function DailyPlanView({
       </Card>
 
       {/* Content Tabs */}
-      <Tabs value={selectedTab} onValueChange={(value) => setSelectedTab(value as any)}>
+      <Tabs
+        value={selectedTab}
+        onValueChange={value => setSelectedTab(value as any)}
+      >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="workout" disabled={!planDay.workout}>
@@ -198,7 +214,7 @@ export function DailyPlanView({
             Nutrition
           </TabsTrigger>
         </TabsList>
-        
+
         <AnimatePresence mode="wait">
           <TabsContent value="overview" className="mt-6">
             <motion.div
@@ -221,34 +237,45 @@ export function DailyPlanView({
                     <CardContent>
                       <div className="space-y-3">
                         <div>
-                          <h4 className="font-semibold text-lg">{planDay.workout.name}</h4>
+                          <h4 className="font-semibold text-lg">
+                            {planDay.workout.name}
+                          </h4>
                           <p className="text-sm text-muted-foreground">
-                            {planDay.workout.type} • {planDay.workout.difficulty}
+                            {planDay.workout.type} •{' '}
+                            {planDay.workout.difficulty}
                           </p>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div className="flex items-center">
                             <Clock className="w-4 h-4 mr-2 text-blue-600" />
-                            <span>{planDay.workout.estimated_duration} min</span>
+                            <span>
+                              {planDay.workout.estimated_duration} min
+                            </span>
                           </div>
                           <div className="flex items-center">
                             <Flame className="w-4 h-4 mr-2 text-orange-600" />
-                            <span>{planDay.workout.estimated_calories} cal</span>
+                            <span>
+                              {planDay.workout.estimated_calories} cal
+                            </span>
                           </div>
                           <div className="flex items-center">
                             <Target className="w-4 h-4 mr-2 text-green-600" />
-                            <span>{planDay.workout.exercises.length} exercises</span>
+                            <span>
+                              {planDay.workout.exercises.length} exercises
+                            </span>
                           </div>
                           <div className="flex items-center">
                             <TrendingUp className="w-4 h-4 mr-2 text-purple-600" />
-                            <span>{planDay.workout.target_muscle_groups.join(', ')}</span>
+                            <span>
+                              {planDay.workout.target_muscle_groups.join(', ')}
+                            </span>
                           </div>
                         </div>
-                        
+
                         <div className="pt-3 border-t">
-                          <Button 
-                            className="w-full" 
+                          <Button
+                            className="w-full"
                             onClick={() => setSelectedTab('workout')}
                             disabled={planDay.completed}
                           >
@@ -269,7 +296,7 @@ export function DailyPlanView({
                     </CardContent>
                   </Card>
                 )}
-                
+
                 {/* Nutrition Summary */}
                 {planDay.meals && planDay.meals.length > 0 && (
                   <Card>
@@ -284,23 +311,37 @@ export function DailyPlanView({
                         <div className="grid grid-cols-2 gap-4">
                           <div className="text-center p-3 bg-primary/5 rounded-lg">
                             <div className="text-lg font-bold text-primary">
-                              {planDay.meals.reduce((sum, meal) => sum + meal.calories, 0)}
+                              {planDay.meals.reduce(
+                                (sum, meal) => sum + meal.calories,
+                                0
+                              )}
                             </div>
-                            <div className="text-xs text-muted-foreground">Calories</div>
+                            <div className="text-xs text-muted-foreground">
+                              Calories
+                            </div>
                           </div>
                           <div className="text-center p-3 bg-green-50 rounded-lg">
                             <div className="text-lg font-bold text-green-600">
                               {planDay.meals.length}
                             </div>
-                            <div className="text-xs text-muted-foreground">Meals</div>
+                            <div className="text-xs text-muted-foreground">
+                              Meals
+                            </div>
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2">
                           {planDay.meals.slice(0, 3).map((meal, index) => (
-                            <div key={meal.id} className="flex justify-between text-sm">
-                              <span className="capitalize">{meal.meal_type}</span>
-                              <span className="text-muted-foreground">{meal.calories} cal</span>
+                            <div
+                              key={meal.id}
+                              className="flex justify-between text-sm"
+                            >
+                              <span className="capitalize">
+                                {meal.meal_type}
+                              </span>
+                              <span className="text-muted-foreground">
+                                {meal.calories} cal
+                              </span>
                             </div>
                           ))}
                           {planDay.meals.length > 3 && (
@@ -309,10 +350,10 @@ export function DailyPlanView({
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="pt-3 border-t">
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             className="w-full"
                             onClick={() => setSelectedTab('nutrition')}
                           >
@@ -338,7 +379,7 @@ export function DailyPlanView({
               )}
             </motion.div>
           </TabsContent>
-          
+
           <TabsContent value="workout" className="mt-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -354,7 +395,7 @@ export function DailyPlanView({
               )}
             </motion.div>
           </TabsContent>
-          
+
           <TabsContent value="nutrition" className="mt-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -367,10 +408,12 @@ export function DailyPlanView({
                     id: `day-${dayIndex}`,
                     date: planDay.date,
                     meals: planDay.meals,
-                    target_calories: planDay.nutrition_targets?.daily_calories || 2000,
-                    target_protein: planDay.nutrition_targets?.protein_grams || 150,
+                    target_calories:
+                      planDay.nutrition_targets?.daily_calories || 2000,
+                    target_protein:
+                      planDay.nutrition_targets?.protein_grams || 150,
                     target_carbs: planDay.nutrition_targets?.carbs_grams || 200,
-                    target_fat: planDay.nutrition_targets?.fat_grams || 80
+                    target_fat: planDay.nutrition_targets?.fat_grams || 80,
                   }}
                   date={planDay.date}
                   onMealComplete={onMealComplete}
