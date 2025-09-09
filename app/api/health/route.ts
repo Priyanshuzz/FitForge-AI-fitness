@@ -23,7 +23,7 @@ interface HealthStatus {
   };
 }
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   const startTime = Date.now();
   const timestamp = new Date().toISOString();
   
