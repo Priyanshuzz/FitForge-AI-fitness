@@ -45,10 +45,6 @@ export function CoachSuggestions({
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  useEffect(() => {
-    generatePersonalizedSuggestions();
-  }, [context, generatePersonalizedSuggestions]);
-
   const generatePersonalizedSuggestions = useCallback(() => {
     // Generate suggestions based on user context
     const baseSuggestions: Suggestion[] = [
@@ -198,6 +194,10 @@ export function CoachSuggestions({
 
     setSuggestions([...contextualSuggestions, ...baseSuggestions]);
   }, [context]);
+
+  useEffect(() => {
+    generatePersonalizedSuggestions();
+  }, [generatePersonalizedSuggestions]);
 
   const categories = [
     {

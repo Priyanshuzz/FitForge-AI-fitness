@@ -89,6 +89,16 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const loadChatHistory = useCallback(async () => {
+    try {
+      // TODO: Replace with actual API call
+      // const history = await getChatHistory(userId);
+      // setMessages(history);
+    } catch (error) {
+      console.error('Failed to load chat history:', error);
+    }
+  }, [userId]);
+
   useEffect(() => {
     // Load chat history
     loadChatHistory();
@@ -105,24 +115,16 @@ export function AIChatCoach({ userId, context }: AIChatCoachProps) {
       };
       setMessages([welcomeMessage]);
     }
-  }, [userId, messages.length, loadChatHistory]);
+  }, [userId, loadChatHistory, messages.length]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const loadChatHistory = useCallback(async () => {
-    try {
-      // TODO: Replace with actual API call
-      // const history = await getChatHistory(userId);
-      // setMessages(history);
-    } catch (error) {
-      console.error('Failed to load chat history:', error);
-    }
-  }, []);
-
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current && typeof messagesEndRef.current.scrollIntoView === 'function') {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleSendMessage = async (message?: string) => {

@@ -49,10 +49,6 @@ export function ProgressDashboard({
   const [analytics, setAnalytics] = useState<UserAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadProgressData();
-  }, [userId, loadProgressData]);
-
   const loadProgressData = useCallback(async () => {
     try {
       setLoading(true);
@@ -124,6 +120,10 @@ export function ProgressDashboard({
       setLoading(false);
     }
   }, [userId]);
+
+  useEffect(() => {
+    loadProgressData();
+  }, [loadProgressData]);
 
   const getLatestEntry = () => {
     return progressEntries.length > 0
